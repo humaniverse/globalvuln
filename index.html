@@ -50,6 +50,9 @@
 </h1></div>
 <p><code>globalvuln</code> is an R data package containing country-level data from published global vulnerability, fragility, development, hunger, health, gender, debt, safeguarding, and displacement indices.</p>
 <p>Publisher scores remain on their original scales. The package standardises only rank and decile direction, so rank 1 and decile 1 always mean <strong>most vulnerable</strong> within the countries scored by that index.</p>
+<blockquote>
+<p><strong>Interactive explorer:</strong> <a href="https://matthewgthomas.co.uk/globalvuln/indices-explorer.html">Compare the structure, coverage, concepts, and sources of all 16 indices</a>.</p>
+</blockquote>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -63,7 +66,7 @@
 </h2>
 <p>The main analysis-ready dataset is <code>humanitarian_indices_country</code>: one row for each of 195 United Nations member or observer states, with score, vulnerability rank, and vulnerability decile columns for all 16 indices.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://matthewgthomas.co.uk/globalvuln/">globalvuln</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://matthewgthomas.co.uk/globalvuln/">globalvuln</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">humanitarian_indices_country</span><span class="op">[</span></span>
 <span>  <span class="va">humanitarian_indices_country</span><span class="op">$</span><span class="va">iso3</span> <span class="op">==</span> <span class="st">"AFG"</span>,</span>

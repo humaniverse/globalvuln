@@ -1,7 +1,7 @@
 # Country-index humanitarian vulnerability data
 
 The complete long-form audit table behind
-[humanitarian_indices_country](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md).
+[humanitarian_indices_country](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md).
 Every country-index combination is retained, including combinations
 outside a publisher's coverage.
 
@@ -100,7 +100,7 @@ A data frame with 3,120 rows and 19 variables:
 ## Source
 
 The publishers and editions are recorded in
-[humanitarian_index_sources](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
+[humanitarian_index_sources](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
 Data snapshot: 4 August 2026.
 
 ## Details
@@ -112,8 +112,8 @@ intentionally not ranked. No publisher score is rescaled or imputed.
 
 ## See also
 
-[humanitarian_indices_country](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
-[individual_indices](http://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md)
+[humanitarian_indices_country](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
+[individual_indices](https://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md)
 
 ## Examples
 

@@ -98,8 +98,8 @@ reproducible source pipeline and are not paths within an installed
 
 ## See also
 
-[humanitarian_indices_country](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
-[humanitarian_indices_long](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md)
+[humanitarian_indices_country](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
+[humanitarian_indices_long](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md)
 
 ## Examples
 

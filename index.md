@@ -9,6 +9,10 @@ standardises only rank and decile direction, so rank 1 and decile 1
 always mean **most vulnerable** within the countries scored by that
 index.
 
+> **Interactive explorer:** [Compare the structure, coverage, concepts,
+> and sources of all 16
+> indices](https://matthewgthomas.co.uk/globalvuln/indices-explorer.html).
+
 ## Installation
 
 Install the development version from GitHub:

@@ -2,7 +2,7 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2026-08-16T16:52Z
+last_built: 2026-08-16T18:51Z
 urls:
-  reference: http://matthewgthomas.co.uk/globalvuln/reference
-  article: http://matthewgthomas.co.uk/globalvuln/articles
+  reference: https://matthewgthomas.co.uk/globalvuln/reference
+  article: https://matthewgthomas.co.uk/globalvuln/articles

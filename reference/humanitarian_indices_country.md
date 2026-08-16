@@ -270,14 +270,14 @@ A data frame with 195 rows and 59 variables:
 ## Source
 
 The publishers and editions are recorded in
-[humanitarian_index_sources](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
+[humanitarian_index_sources](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
 Data snapshot: 4 August 2026.
 
 ## Details
 
 The `*_score`, `*_rank`, and `*_decile` fields occur once for each of
 the 16 `index_id` values documented in
-[individual_indices](http://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md).
+[individual_indices](https://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md).
 Debt distress is a classification and is therefore not ranked or placed
 into deciles. The Disaster Displacement Risk Model columns are retained
 but contain missing values because the publisher did not provide a
@@ -294,8 +294,8 @@ produced.
 
 ## See also
 
-[humanitarian_indices_long](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md),
-[individual_indices](http://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md)
+[humanitarian_indices_long](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md),
+[individual_indices](https://matthewgthomas.co.uk/globalvuln/reference/individual_indices.md)
 
 ## Examples
 

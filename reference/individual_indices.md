@@ -9,13 +9,13 @@ index's published coverage contain missing source and score fields.
 
 Each object is a data frame with 195 rows and the 19 variables
 documented in
-[humanitarian_indices_long](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md).
+[humanitarian_indices_long](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md).
 Each contains exactly one `index_id` value.
 
 ## Source
 
 Publisher details and URLs are in
-[humanitarian_index_sources](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
+[humanitarian_index_sources](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.md).
 Data snapshot: 4 August 2026.
 
 ## Details
@@ -63,8 +63,8 @@ The included objects are:
 
 ## See also
 
-[humanitarian_indices_country](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
-[humanitarian_indices_long](http://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md)
+[humanitarian_indices_country](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
+[humanitarian_indices_long](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md)
 
 ## Examples
 
