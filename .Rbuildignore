@@ -1,0 +1,6 @@
+^data-raw$
+^globalvuln\.Rproj$
+^\.Rproj\.user$
+^\.github$
+^\.DS_Store$
+^LICENSE\.md$

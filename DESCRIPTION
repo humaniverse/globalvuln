@@ -1,0 +1,23 @@
+Package: globalvuln
+Type: Package
+Title: Global Humanitarian Vulnerability Indices
+Version: 0.1.0
+Authors@R: 
+    person("Matthew", "Gwynfryn Thomas", , "matthewgthomas@gmail.com", 
+           role = c("aut", "cre"))
+Description: Country-level data from published global vulnerability, fragility,
+    development, hunger, health, gender, debt, safeguarding, and displacement
+    indices. Publisher scores are retained on their original scales, while
+    ranks and deciles use a common direction in which one indicates the most
+    vulnerable country.
+License: MIT + file LICENSE
+Depends: 
+    R (>= 4.1.0)
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+LazyDataCompression: xz
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.0.0
