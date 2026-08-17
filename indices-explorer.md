@@ -15,7 +15,7 @@ deliberately separate.
 
 **195**UN member or observer states
 
-Search methods, concepts, or sources /
+Search methods, concepts, sources, or shared inputs /
 
 **Overlap is not equivalence.** A shared concept can be measured in
 different ways. A shared provider may supply unrelated series. Exact
@@ -35,6 +35,8 @@ Concepts
 Methods
 
 Sources
+
+Data network
 
 Coverage
 
@@ -66,6 +68,26 @@ inspect documented index-to-index dependencies separately.
 Providers
 
 Datasets & series
+
+## Direct data reuse
+
+Shared input nodes identify the same published indicator or source
+series. Arrows show a documented index or index output feeding another
+methodology.
+
+Conceptual similarity, matching labels, shared publishers, and
+provider-only overlap are excluded. Select a node or arrow for the
+underlying leaves and evidence.
+
+Complete network
+
+Selected network
+
+Shared analytical input Index feeds another index
+
+![](data:image/svg+xml;base64,PHN2ZyBpZD0iZGF0YS1uZXR3b3JrIiB2aWV3Ym94PSIwIDAgMTEyMCA3NjAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJuZXR3b3JrLXRpdGxlIG5ldHdvcmstZGVzY3JpcHRpb24iPjwvc3ZnPg==)
+
+Complete direct-connection list
 
 ## Country coverage
 
