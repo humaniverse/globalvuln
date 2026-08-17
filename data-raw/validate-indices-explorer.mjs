@@ -33,6 +33,8 @@ const ALLOWED_RELATION_TYPES = new Set([
   "conceptual_overlap",
   "legacy_replacement",
 ]);
+const ALLOWED_NETWORK_INPUT_KINDS = new Set(["indicator", "series"]);
+const ALLOWED_NETWORK_DEPENDENCY_TYPES = new Set(["direct_input", "nested_composite"]);
 const ALLOWED_COVERAGE_STATUSES = new Set([
   "ranked_numeric",
   "numeric_unranked",
@@ -264,6 +266,25 @@ try {
   process.exit(1);
 }
 
+const networkDataScript = html.match(
+  /<script\b(?=[^>]*\bid\s*=\s*["']network-data["'])(?=[^>]*\btype\s*=\s*["']application\/json["'])[^>]*>([\s\S]*?)<\/script\s*>/i,
+);
+
+if (!networkDataScript) {
+  console.error(
+    `No <script id="network-data" type="application/json"> block found in ${explorerPath}`,
+  );
+  process.exit(1);
+}
+
+let networkData;
+try {
+  networkData = JSON.parse(networkDataScript[1]);
+} catch (error) {
+  console.error(`Network data is not valid JSON: ${error.message}`);
+  process.exit(1);
+}
+
 requireObject(data, "explorer-data");
 const version = requireString(data.version, "version");
 const snapshotDate = requireString(data.snapshotDate, "snapshotDate");
@@ -279,6 +300,13 @@ const relations = requireArray(data.relations, "relations");
 const countries = requireArray(data.countries, "countries");
 const coverage = requireArray(data.coverage, "coverage");
 const map = requireObject(data.map, "map");
+requireObject(networkData, "network-data");
+const networkVersion = requireString(networkData?.version, "network-data.version");
+const networkCuratedDate = requireString(networkData?.curatedDate, "network-data.curatedDate");
+check(networkVersion !== "pending", "network-data.version must not be the pending placeholder");
+check(/^\d{4}-\d{2}-\d{2}$/.test(networkCuratedDate), "network-data.curatedDate must use YYYY-MM-DD format");
+const sharedInputs = requireArray(networkData?.sharedInputs, "network-data.sharedInputs");
+const networkDependencies = requireArray(networkData?.dependencies, "network-data.dependencies");
 
 const conceptIds = collectIds(concepts, "concepts");
 const indexIds = collectIds(indices, "indices");
@@ -287,6 +315,7 @@ const sourceIds = collectIds(sources, "sources");
 const nodeIds = collectIds(nodes, "nodes");
 const nodesById = new Map(nodes.map((node) => [node.id, node]));
 const indicesById = new Map(indices.map((index) => [index.id, index]));
+const relationsById = new Map(relations.map((relation) => [relation.id, relation]));
 checkCanonicalIndexIds(indices);
 
 check(providers.length > 0, "providers must contain normalized provider records");
@@ -582,6 +611,124 @@ for (const type of ALLOWED_RELATION_TYPES) {
   check(relationTypesPresent.has(type), `relations must exercise typed relationship ${JSON.stringify(type)}`);
 }
 
+const normalizedDatasetIds = new Set(
+  [...normalizedSources]
+    .filter(([, source]) => source.type === "dataset" || source.type === "series")
+    .map(([id]) => id),
+);
+const sharedInputIds = collectIds(sharedInputs, "network-data.sharedInputs");
+sharedInputs.forEach((input, inputIndex) => {
+  const fieldName = `network-data.sharedInputs[${inputIndex}]`;
+  requireString(input?.label, `${fieldName}.label`);
+  check(
+    ALLOWED_NETWORK_INPUT_KINDS.has(input?.kind),
+    `${fieldName}.kind must be one of ${[...ALLOWED_NETWORK_INPUT_KINDS].join(", ")}`,
+  );
+  const members = requireArray(input?.members, `${fieldName}.members`);
+  check(members.length >= 2, `${fieldName}.members must connect at least two indices`);
+  const memberIndexIds = new Set();
+  const memberNodeIds = new Set();
+  members.forEach((member, memberIndex) => {
+    const memberField = `${fieldName}.members[${memberIndex}]`;
+    const indexId = requireString(member?.indexId, `${memberField}.indexId`);
+    check(indexIds.has(indexId), `${memberField}.indexId references an unknown index`);
+    check(!memberIndexIds.has(indexId), `${fieldName}.members duplicates index ${JSON.stringify(indexId)}`);
+    memberIndexIds.add(indexId);
+    const leafIds = checkReferenceList(member?.nodeIds, nodeIds, `${memberField}.nodeIds`);
+    check(leafIds.length > 0, `${memberField}.nodeIds must identify at least one analytical leaf`);
+    leafIds.forEach((nodeId) => {
+      const node = nodesById.get(nodeId);
+      check(node?.indexId === indexId, `${memberField}.nodeIds contains a node from another index`);
+      check(node?.isLeaf === true, `${memberField}.nodeIds must reference analytical leaves`);
+      check(!memberNodeIds.has(nodeId), `${fieldName}.members reuses node ${JSON.stringify(nodeId)}`);
+      memberNodeIds.add(nodeId);
+    });
+  });
+  const normalizedIds = requireArray(input?.normalizedSourceIds, `${fieldName}.normalizedSourceIds`);
+  check(normalizedIds.length > 0, `${fieldName}.normalizedSourceIds must identify direct dataset or series provenance`);
+  const seenNormalizedIds = new Set();
+  normalizedIds.forEach((sourceId, sourceIndex) => {
+    const sourceField = `${fieldName}.normalizedSourceIds[${sourceIndex}]`;
+    const id = requireString(sourceId, sourceField);
+    check(normalizedDatasetIds.has(id), `${sourceField} must reference a normalized dataset or series`);
+    check(!seenNormalizedIds.has(id), `${fieldName}.normalizedSourceIds duplicates ${JSON.stringify(id)}`);
+    seenNormalizedIds.add(id);
+  });
+  checkEvidence(input?.evidence, `${fieldName}.evidence`);
+  requireString(input?.editionNote, `${fieldName}.editionNote`);
+});
+
+check(sharedInputIds.has("input_wgi_rule_of_law"), "network must include the curated WGI rule-of-law input group");
+const wgiRuleOfLawMembers = new Set(
+  sharedInputs.find((input) => input.id === "input_wgi_rule_of_law")?.members?.map((member) => member.indexId) ?? [],
+);
+for (const indexId of ["inform_severity", "oecd_fragility", "worldrisk", "nd_gain"]) {
+  check(wgiRuleOfLawMembers.has(indexId), `WGI rule-of-law input must include ${indexId}`);
+}
+check(
+  !wgiRuleOfLawMembers.has("searo"),
+  "WGI rule-of-law input must exclude SEARO's World Justice Project measure",
+);
+
+const networkDependencyIds = new Set();
+networkDependencies.forEach((dependency, dependencyIndex) => {
+  const fieldName = `network-data.dependencies[${dependencyIndex}]`;
+  const relationId = requireString(dependency?.relationId, `${fieldName}.relationId`);
+  check(!networkDependencyIds.has(relationId), `${fieldName}.relationId duplicates ${JSON.stringify(relationId)}`);
+  networkDependencyIds.add(relationId);
+  const relation = relationsById.get(relationId);
+  check(Boolean(relation), `${fieldName}.relationId references an unknown relation`);
+  check(
+    ALLOWED_NETWORK_DEPENDENCY_TYPES.has(relation?.type),
+    `${fieldName}.relationId must reference only direct_input or nested_composite relations`,
+  );
+  for (const [nodeField, expectedIndexId] of [
+    ["fromNodeIds", relation?.fromIndexId],
+    ["toNodeIds", relation?.toIndexId],
+  ]) {
+    const references = checkReferenceList(dependency?.[nodeField], nodeIds, `${fieldName}.${nodeField}`);
+    if (nodeField === "toNodeIds") {
+      check(references.length > 0, `${fieldName}.toNodeIds must identify the consuming analytical leaf`);
+    }
+    references.forEach((nodeId) => {
+      const node = nodesById.get(nodeId);
+      check(node?.indexId === expectedIndexId, `${fieldName}.${nodeField} contains a node from the wrong index`);
+      check(node?.isLeaf === true, `${fieldName}.${nodeField} must reference analytical leaves`);
+    });
+  }
+});
+
+const directRelationIds = new Set(
+  relations
+    .filter((relation) => ALLOWED_NETWORK_DEPENDENCY_TYPES.has(relation.type))
+    .map((relation) => relation.id),
+);
+for (const relationId of directRelationIds) {
+  check(networkDependencyIds.has(relationId), `network dependencies is missing direct relation ${JSON.stringify(relationId)}`);
+}
+for (const relationId of networkDependencyIds) {
+  check(directRelationIds.has(relationId), `network dependencies contains non-direct relation ${JSON.stringify(relationId)}`);
+}
+check(networkDependencyIds.has("rel_mpi_inform_risk"), "network must include Global MPI feeding INFORM Risk");
+
+const networkDependencyPairs = new Set(
+  networkDependencies.flatMap((dependency) => {
+    const relation = relationsById.get(dependency.relationId);
+    return relation ? [`${relation.fromIndexId}->${relation.toIndexId}`] : [];
+  }),
+);
+for (const [leftIndexId, rightIndexId, label] of [
+  ["inform_risk", "inform_severity", "INFORM Risk and INFORM Severity"],
+  ["ghi", "mpi", "Global Hunger Index and Global MPI"],
+  ["debt_distress", "oecd_fragility", "Debt distress and OECD Fragility"],
+]) {
+  check(
+    !networkDependencyPairs.has(`${leftIndexId}->${rightIndexId}`)
+      && !networkDependencyPairs.has(`${rightIndexId}->${leftIndexId}`),
+    `network must not infer a dependency between ${label}`,
+  );
+}
+
 check(countries.length === 195, "countries must contain exactly 195 records");
 const countryIds = new Set();
 const countryNames = new Set();
@@ -759,5 +906,6 @@ if (issues.length > 0) {
 console.log(
   `Validated ${indices.length} indices, ${nodes.length} hierarchy nodes, ` +
     `${sources.length} sources, ${providers.length} providers, ${concepts.length} concepts, ` +
-    `and ${coverage.length} coverage records.`,
+    `${coverage.length} coverage records, ${sharedInputs.length} shared network inputs, ` +
+    `and ${networkDependencies.length} direct network dependencies.`,
 );
