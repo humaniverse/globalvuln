@@ -54,6 +54,6 @@ humanitarian_index_sources[
 ]
 }
 \seealso{
-\link{humanitarian_indices_country}, \link{humanitarian_indices_long}
+\code{\link[=collate_indices]{collate_indices()}}, \link{individual_indices}
 }
 \keyword{datasets}

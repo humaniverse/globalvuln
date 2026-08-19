@@ -5,66 +5,78 @@ index_ids <- c(
   "internal_displacement"
 )
 
-test_that("the country dataset has one row per master country", {
-  expect_s3_class(humanitarian_indices_country, "data.frame")
-  expect_equal(dim(humanitarian_indices_country), c(195L, 59L))
-  expect_false(anyNA(humanitarian_indices_country$iso3))
-  expect_false(anyDuplicated(humanitarian_indices_country$iso3) > 0L)
-  expect_setequal(
-    names(humanitarian_indices_country)[1:4],
-    c("country", "iso3", "region", "subregion")
-  )
-})
+load_package_data <- function(name) {
+  data_environment <- new.env(parent = emptyenv())
+  utils::data(list = name, package = "globalvuln", envir = data_environment)
+  get(name, envir = data_environment, inherits = FALSE)
+}
 
-test_that("the long dataset is a complete country-index grid", {
-  expect_equal(dim(humanitarian_indices_long), c(3120L, 19L))
-  expect_identical(unique(humanitarian_indices_long$index_id), index_ids)
-  expect_equal(sort(unique(humanitarian_indices_long$iso3)),
-               sort(humanitarian_indices_country$iso3))
-  expect_false(anyDuplicated(
-    humanitarian_indices_long[c("iso3", "index_id")]
-  ) > 0L)
-})
+test_that("individual datasets share the complete master geography", {
+  master_iso3 <- NULL
 
-test_that("individual datasets reproduce their long-table slices", {
   for (index_id in index_ids) {
-    index_data <- get(index_id, envir = asNamespace("globalvuln"))
-    expected <- humanitarian_indices_long[
-      humanitarian_indices_long$index_id == index_id,
-      ,
-      drop = FALSE
-    ]
-    rownames(expected) <- NULL
+    index_data <- load_package_data(index_id)
 
-    expect_equal(nrow(index_data), 195L, info = index_id)
+    expect_s3_class(index_data, "data.frame")
+    expect_equal(dim(index_data), c(195L, 19L), info = index_id)
     expect_identical(unique(index_data$index_id), index_id, info = index_id)
-    expect_identical(index_data, expected, info = index_id)
+    expect_false(anyNA(index_data$iso3), info = index_id)
+    expect_false(anyDuplicated(index_data$iso3) > 0L, info = index_id)
+    expect_setequal(
+      names(index_data)[1:4],
+      c("country", "iso3", "region", "subregion")
+    )
+
+    if (is.null(master_iso3)) {
+      master_iso3 <- index_data$iso3
+    } else {
+      expect_identical(index_data$iso3, master_iso3, info = index_id)
+    }
   }
 })
 
-test_that("harmonised ranking fields obey their documented direction", {
-  rankable <- humanitarian_indices_long$rankable &
-    !is.na(humanitarian_indices_long$score)
+test_that("rank flags use country ranks rather than deciles", {
+  for (index_id in index_ids) {
+    index_data <- load_package_data(index_id)
+    included <- index_data$eligible_for_counts %in% TRUE &
+      !is.na(index_data$rank)
 
-  expect_true(all(!is.na(humanitarian_indices_long$rank[rankable])))
-  expect_true(all(humanitarian_indices_long$rank[rankable] >= 1L))
-  expect_true(all(humanitarian_indices_long$decile[rankable] %in% 1:10))
-  expect_identical(
-    humanitarian_indices_long$top_10[rankable],
-    humanitarian_indices_long$decile[rankable] == 1L
-  )
-  expect_identical(
-    humanitarian_indices_long$top_20[rankable],
-    humanitarian_indices_long$decile[rankable] <= 2L
-  )
+    expect_identical(
+      index_data$top_10[included],
+      index_data$rank[included] <= 10L,
+      info = index_id
+    )
+    expect_identical(
+      index_data$top_20[included],
+      index_data$rank[included] <= 20L,
+      info = index_id
+    )
+    expect_true(all(is.na(index_data$top_10[!included])), info = index_id)
+    expect_true(all(is.na(index_data$top_20[!included])), info = index_id)
+  }
+
+  nd_gain <- load_package_data("nd_gain")
+  afghanistan <- nd_gain[nd_gain$iso3 == "AFG", ]
+  expect_equal(afghanistan$rank, 11L)
+  expect_equal(afghanistan$decile, 1L)
+  expect_false(afghanistan$top_10)
+  expect_true(afghanistan$top_20)
+})
+
+test_that("harmonised ranking fields obey their documented direction", {
+  for (index_id in index_ids) {
+    index_data <- load_package_data(index_id)
+    rankable <- index_data$rankable & !is.na(index_data$score)
+
+    expect_true(all(!is.na(index_data$rank[rankable])), info = index_id)
+    expect_true(all(index_data$rank[rankable] >= 1L), info = index_id)
+    expect_true(all(index_data$decile[rankable] %in% 1:10), info = index_id)
+  }
 })
 
 test_that("special missingness and classification rules are preserved", {
-  debt <- subset(humanitarian_indices_long, index_id == "debt_distress")
-  displacement <- subset(
-    humanitarian_indices_long,
-    index_id == "disaster_displacement"
-  )
+  debt <- load_package_data("debt_distress")
+  displacement <- load_package_data("disaster_displacement")
 
   expect_true(all(is.na(debt$rank)))
   expect_true(all(is.na(debt$decile)))
@@ -73,11 +85,17 @@ test_that("special missingness and classification rules are preserved", {
 })
 
 test_that("source provenance covers every index and the geography", {
-  expect_setequal(
-    humanitarian_index_sources$source_id,
-    c(index_ids, "un_m49")
-  )
-  expect_s3_class(humanitarian_index_sources$retrieval_date, "Date")
-  expect_true(all(humanitarian_index_sources$coverage_ok))
-  expect_false(anyNA(humanitarian_index_sources$source_url))
+  sources <- load_package_data("humanitarian_index_sources")
+
+  expect_setequal(sources$source_id, c(index_ids, "un_m49"))
+  expect_s3_class(sources$retrieval_date, "Date")
+  expect_true(all(sources$coverage_ok))
+  expect_false(anyNA(sources$source_url))
+})
+
+test_that("obsolete collated datasets are not shipped", {
+  available <- utils::data(package = "globalvuln")$results[, "Item"]
+
+  expect_false("humanitarian_indices_country" %in% available)
+  expect_false("humanitarian_indices_long" %in% available)
 })

@@ -20,9 +20,35 @@
 \alias{internal_displacement}
 \title{Individual humanitarian index datasets}
 \format{
-Each object is a data frame with 195 rows and the 19 variables
-documented in \link{humanitarian_indices_long}. Each contains exactly one
-\code{index_id} value.
+Each object is a data frame with 195 rows and 19 variables:
+\describe{
+\item{country}{Country name from the master geography.}
+\item{iso3}{Three-letter ISO 3166-1 country code.}
+\item{region}{United Nations M49 region.}
+\item{subregion}{United Nations M49 subregion.}
+\item{index_id}{Stable short identifier for the index.}
+\item{index_name}{Human-readable name of the index.}
+\item{source_country}{Country label in the publisher's source; missing
+when the country was not present in that source.}
+\item{score}{Publisher score on its original scale.}
+\item{score_label}{Publisher display label when meaningful, including
+censored values, score ranges, percentages, or classifications.}
+\item{reference_year}{Year or period represented by the observation.}
+\item{edition}{Publisher's edition or release label.}
+\item{score_direction}{Whether a higher or lower publisher score denotes
+greater vulnerability: \code{higher_worse} or \code{lower_worse}.}
+\item{rankable}{Whether the index is eligible for ranking.}
+\item{eligible_for_counts}{Whether an available rank contributes to
+country-level summary counts and proportions.}
+\item{n_scored}{Number of countries with an exact numeric score for the
+index.}
+\item{rank}{Rank among scored countries, with 1 denoting most vulnerable;
+ties receive the minimum rank.}
+\item{decile}{Vulnerability decile derived from rank, from 1 (most
+vulnerable) to 10 (least vulnerable).}
+\item{top_10}{Whether the country has vulnerability rank 10 or better.}
+\item{top_20}{Whether the country has vulnerability rank 20 or better.}
+}
 }
 \source{
 Publisher details and URLs are in \link{humanitarian_index_sources}. Data
@@ -31,43 +57,73 @@ snapshot: 4 August 2026.
 \description{
 Sixteen consistently structured datasets, one for each published index in
 the collection. Each uses the same 195-country master geography so datasets
-can be compared or joined directly by \code{iso3}; rows outside an index's
-published coverage contain missing source and score fields.
+can be compared or collated by \code{iso3}; rows outside an index's published
+coverage contain missing source and score fields.
 }
 \details{
-The included objects are:
+Publisher scores retain their original scales. Rankings are calculated
+separately within each index's exact numeric coverage; missing and censored
+scores are not ranked. Deciles are
+\code{min(10, floor(10 * (rank - 1) / n_scored) + 1)}. Ties use minimum rank, so
+more than 10 or 20 countries can have \code{top_10} or \code{top_20} set to \code{TRUE}.
+
+The included datasets are:
 \itemize{
-\item \code{inform_risk}: INFORM Risk, 2026 v0.7.2.
-\item \code{inform_severity}: INFORM Severity, June 2026.
-\item \code{underfunded_crisis}: Underfunded Crisis Index, 2025.
+\item \code{inform_risk}: INFORM Risk, 2026 v0.7.2. Measures humanitarian crisis and
+disaster risk; higher scores indicate greater vulnerability.
+\item \code{inform_severity}: INFORM Severity, June 2026. Measures current crisis
+severity; higher scores indicate greater vulnerability. Coverage is the
+publisher's country sheet.
+\item \code{underfunded_crisis}: Underfunded Crisis Index, 2025. Reports the
+cumulative share of requirements funded for 2021--2025; lower percentages
+indicate greater vulnerability. Regional plans are excluded.
 \item \code{oecd_fragility}: OECD Multidimensional Fragility, States of Fragility
-2025.
-\item \code{worldrisk}: WorldRiskIndex, 2025.
-\item \code{nd_gain}: ND-GAIN Country Index, 2026 release using 2024 scores.
+2025. Measures exposure to risk and insufficient resilience; lower scores
+indicate greater vulnerability. The public artifact covers 61 high- or
+extreme-fragility contexts.
+\item \code{worldrisk}: WorldRiskIndex, 2025. Measures disaster risk from exposure
+and societal vulnerability; higher scores indicate greater vulnerability.
+\item \code{nd_gain}: ND-GAIN Country Index, 2026 release using 2024 scores. Measures
+climate vulnerability and adaptation readiness; lower overall scores
+indicate greater vulnerability.
 \item \code{hdi}: Human Development Index, Human Development Report 2025 using 2023
-scores.
-\item \code{mpi}: Global Multidimensional Poverty Index, 2025.
-\item \code{ghi}: Global Hunger Index, 2025.
-\item \code{ghs}: Global Health Security Index, 2021.
-\item \code{wps}: Women, Peace and Security Index, 2025/26.
-\item \code{un_mvi}: United Nations Multidimensional Vulnerability Index,
-High-Level Panel results.
-\item \code{debt_distress}: International Monetary Fund debt-distress
-classification, 31 March 2026. This classification is not ranked.
-\item \code{searo}: Sexual Exploitation and Abuse Risk Overview, 2026 v1.2.
+scores. Measures health, education, and living standards; lower scores
+indicate greater vulnerability.
+\item \code{mpi}: Global Multidimensional Poverty Index, 2025. Measures overlapping
+household deprivations; higher scores indicate greater vulnerability.
+Reference years vary by country survey.
+\item \code{ghi}: Global Hunger Index, 2025. Measures hunger from undernourishment and
+child-health indicators; higher scores indicate greater vulnerability.
+Only exact values are ranked; censored values and ranges remain labels.
+\item \code{ghs}: Global Health Security Index, 2021. Measures epidemic and pandemic
+preparedness; lower scores indicate greater vulnerability.
+\item \code{wps}: Women, Peace and Security Index, 2025/26. Measures women's
+inclusion, justice, and security; lower scores indicate greater
+vulnerability.
+\item \code{un_mvi}: United Nations Multidimensional Vulnerability Index, High-Level
+Panel results using 2023 data. Measures structural vulnerability and lack
+of resilience; higher scores indicate greater vulnerability.
+\item \code{debt_distress}: IMF debt-distress classification, 31 March 2026. The
+published class is paired with a derived ordinal code from 1 (low) to 4
+(in debt distress); it is intentionally not ranked or placed in deciles.
+\item \code{searo}: Sexual Exploitation and Abuse Risk Overview, 2026 v1.2 using
+December 2025 data. Measures contextual safeguarding risk; higher scores
+indicate greater vulnerability.
 \item \code{disaster_displacement}: IDMC Disaster Displacement Risk Model, GDRM 2.0.
-Its rows are retained with missing values because no stable downloadable
-country table was available at the snapshot date.
+Intended to report current-climate annual average displacement, with
+higher values indicating greater vulnerability. Values are missing in
+this snapshot because no stable country table was available.
 \item \code{internal_displacement}: IDMC Internal Displacement Index, 2022 values
-published in 2023.
+published in 2023. Measures policy, capacity, drivers, and impacts; lower
+scores indicate greater vulnerability. Numeric coverage is 44 countries.
 }
 }
 \examples{
 data(inform_risk)
 
 head(inform_risk[!is.na(inform_risk$score),
-                 c("country", "score", "rank", "decile")])
+                 c("country", "score", "rank", "decile", "top_10")])
 }
 \seealso{
-\link{humanitarian_indices_country}, \link{humanitarian_indices_long}
+\code{\link[=collate_indices]{collate_indices()}}, \link{humanitarian_index_sources}
 }

@@ -9,12 +9,9 @@ source_dir <- Sys.getenv(
 long_path <- file.path(
   source_dir, "data", "processed", "humanitarian_indices_long.rds"
 )
-country_path <- file.path(
-  source_dir, "data", "processed", "humanitarian_indices_country.rds"
-)
 manifest_path <- file.path(source_dir, "artifacts", "source_manifest.csv")
 
-required_files <- c(long_path, country_path, manifest_path)
+required_files <- c(long_path, manifest_path)
 missing_files <- required_files[!file.exists(required_files)]
 if (length(missing_files)) {
   stop(
@@ -25,7 +22,6 @@ if (length(missing_files)) {
 }
 
 humanitarian_indices_long <- as.data.frame(readRDS(long_path))
-humanitarian_indices_country <- as.data.frame(readRDS(country_path))
 humanitarian_index_sources <- read.csv(
   manifest_path,
   stringsAsFactors = FALSE,
@@ -49,14 +45,23 @@ if (!identical(observed_index_ids, index_ids)) {
     call. = FALSE
   )
 }
-if (nrow(humanitarian_indices_country) != 195L ||
-    anyDuplicated(humanitarian_indices_country$iso3)) {
-  stop("The country dataset does not contain 195 unique ISO3 rows.", call. = FALSE)
-}
 if (nrow(humanitarian_indices_long) != 195L * length(index_ids) ||
     anyDuplicated(humanitarian_indices_long[c("iso3", "index_id")])) {
   stop("The long dataset is not a complete country-index grid.", call. = FALSE)
 }
+if (length(unique(humanitarian_indices_long$iso3)) != 195L ||
+    anyNA(humanitarian_indices_long$iso3)) {
+  stop("The long dataset does not contain 195 unique ISO3 codes.", call. = FALSE)
+}
+
+included <- humanitarian_indices_long$eligible_for_counts %in% TRUE &
+  !is.na(humanitarian_indices_long$rank)
+humanitarian_indices_long$top_10 <- rep(NA, nrow(humanitarian_indices_long))
+humanitarian_indices_long$top_20 <- rep(NA, nrow(humanitarian_indices_long))
+humanitarian_indices_long$top_10[included] <-
+  humanitarian_indices_long$rank[included] <= 10L
+humanitarian_indices_long$top_20[included] <-
+  humanitarian_indices_long$rank[included] <= 20L
 
 individual_indices <- split(
   humanitarian_indices_long,
@@ -71,18 +76,6 @@ list2env(individual_indices, envir = environment())
 
 dir.create("data", showWarnings = FALSE)
 
-save(
-  humanitarian_indices_country,
-  file = file.path("data", "humanitarian_indices_country.rda"),
-  version = 3,
-  compress = "xz"
-)
-save(
-  humanitarian_indices_long,
-  file = file.path("data", "humanitarian_indices_long.rda"),
-  version = 3,
-  compress = "xz"
-)
 save(
   humanitarian_index_sources,
   file = file.path("data", "humanitarian_index_sources.rda"),

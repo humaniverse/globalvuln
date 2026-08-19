@@ -13,15 +13,24 @@ indices.
 \details{
 The package provides three complementary interfaces:
 \itemize{
-\item \link{humanitarian_indices_country} is the analysis-ready, country-wide table.
-\item \link{humanitarian_indices_long} is the complete country-index audit table.
+\item \code{\link[=collate_indices]{collate_indices()}} combines a user-selected set of indices in wide or
+long form.
 \item The 16 datasets documented in \link{individual_indices} expose one index at a
 time on the same 195-country geography.
+\item \link{humanitarian_index_sources} records source and provenance metadata.
 }
 
 Publisher scores retain their original scales. Computed ranks and deciles
 have a common direction: rank 1 and decile 1 always identify the most
 vulnerable observations within an index's published numeric coverage.
+Top-10 and top-20 summaries use ranks, not deciles.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://matthewgthomas.co.uk/globalvuln/}
+}
+
 }
 \author{
 \strong{Maintainer}: Matthew Gwynfryn Thomas \email{matthewgthomas@gmail.com}
