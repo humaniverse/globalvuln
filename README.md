@@ -1,4 +1,4 @@
-# globalvuln
+# globalvuln <a href="https://matthewgthomas.co.uk/globalvuln/"><img src="man/figures/logo.png" align="right" height="139" alt="globalvuln website" /></a>
 
 `globalvuln` is an R data package containing country-level data from published
 global vulnerability, fragility, development, hunger, health, gender, debt,
