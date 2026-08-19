@@ -1,16 +1,15 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/404.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/LICENSE-text.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/LICENSE.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/authors.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/index.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/indices-explorer.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/news/index.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/globalvuln-package.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_index_sources.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/index.html</loc></url>
-<url><loc>https://matthewgthomas.co.uk/globalvuln/reference/individual_indices.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/404.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/LICENSE-text.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/LICENSE.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/authors.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/index.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/indices-explorer.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/news/index.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/reference/collate_indices.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/reference/globalvuln-package.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/reference/humanitarian_index_sources.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/reference/index.html</loc></url>
+<url><loc>https://humaniverse.github.io/globalvuln/reference/individual_indices.html</loc></url>
 </urlset>
 

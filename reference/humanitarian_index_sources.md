@@ -98,8 +98,8 @@ reproducible source pipeline and are not paths within an installed
 
 ## See also
 
-[humanitarian_indices_country](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_country.md),
-[humanitarian_indices_long](https://matthewgthomas.co.uk/globalvuln/reference/humanitarian_indices_long.md)
+[`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md),
+[individual_indices](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
 
 ## Examples
 

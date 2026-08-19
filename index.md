@@ -11,7 +11,7 @@ index.
 
 > **Interactive explorer:** [Compare the structure, coverage, concepts,
 > and sources of all 16
-> indices](https://matthewgthomas.co.uk/globalvuln/indices-explorer.html).
+> indices](https://humaniverse.github.io/globalvuln/indices-explorer.html).
 
 ## Installation
 
@@ -20,29 +20,38 @@ Install the development version from GitHub:
 ``` r
 
 # install.packages("pak")
-pak::pak("matthewgthomas/globalvuln")
+pak::pak("humaniverse/globalvuln")
 ```
 
 ## Data
 
-The main analysis-ready dataset is `humanitarian_indices_country`: one
-row for each of 195 United Nations member or observer states, with
-score, vulnerability rank, and vulnerability decile columns for all 16
-indices.
+Use
+[`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md)
+to build an analysis-ready dataset containing only the indices you need.
+Supply their identifiers as a character vector and choose a wide or long
+layout:
 
 ``` r
 
 library(globalvuln)
 
-humanitarian_indices_country[
-  humanitarian_indices_country$iso3 == "AFG",
-  c("country", "inform_risk_score", "inform_risk_rank", "top_10_count")
+selected <- collate_indices(c("inform_risk", "hdi", "mpi"))
+
+selected[
+  selected$iso3 == "AFG",
+  c("country", "inform_risk_rank", "top_10_proportion")
 ]
+
+selected_long <- collate_indices(
+  c("inform_risk", "hdi", "mpi"),
+  format = "long"
+)
 ```
 
-`humanitarian_indices_long` contains the same collection as a complete
-country-index audit table. Individual index datasets share that table’s
-schema and use the source identifiers as their object names:
+Both layouts retain all 195 United Nations member or observer states.
+The long layout keeps every selected country-index combination,
+including observations outside publisher coverage. Individual index
+datasets use the source identifiers as their object names:
 
 ``` r
 
@@ -91,9 +100,13 @@ notes.
 - Ties use minimum rank. Deciles are
   `min(10, floor(10 * (rank - 1) / n_scored) + 1)`, so tied groups can
   make a decile contain more than exactly 10% of scored countries.
-- `top_10_count` counts decile 1 appearances; `top_20_count` counts
-  decile 1 or 2 appearances; and `indices_ranked_count` is the available
-  denominator for each country.
+- `top_10_count` counts ranks from 1 through 10 and `top_20_count`
+  counts ranks from 1 through 20. The corresponding proportions divide
+  by `indices_ranked_count`, the selected eligible indices on which that
+  country has an available rank.
+- Countries with no available selected rank have zero top-10/top-20
+  counts and missing proportions. Missing coverage is not treated as a
+  non-top rank.
 - Debt distress is a published classification with a derived ordinal
   value. It is not ranked or included in summary counts.
 - Global Hunger Index censored values and ranges are retained as score
