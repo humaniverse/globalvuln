@@ -1,4 +1,4 @@
-# globalvuln <a href="https://matthewgthomas.co.uk/globalvuln/"><img src="man/figures/logo.png" align="right" height="139" alt="globalvuln website" /></a>
+# globalvuln <a href="https://humaniverse.github.io/globalvuln/"><img src="man/figures/logo.png" align="right" height="139" alt="globalvuln website" /></a>
 
 `globalvuln` is an R data package containing country-level data from published
 global vulnerability, fragility, development, hunger, health, gender, debt,
@@ -9,7 +9,7 @@ only rank and decile direction, so rank 1 and decile 1 always mean **most
 vulnerable** within the countries scored by that index.
 
 > **Interactive explorer:** [Compare the structure, coverage, concepts, and
-> sources of all 16 indices](https://matthewgthomas.co.uk/globalvuln/indices-explorer.html).
+> sources of all 16 indices](https://humaniverse.github.io/globalvuln/indices-explorer.html).
 
 ## Installation
 
@@ -17,7 +17,7 @@ Install the development version from GitHub:
 
 ```r
 # install.packages("pak")
-pak::pak("matthewgthomas/globalvuln")
+pak::pak("humaniverse/globalvuln")
 ```
 
 ## Data

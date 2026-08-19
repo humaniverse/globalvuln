@@ -28,7 +28,7 @@ Top-10 and top-20 summaries use ranks, not deciles.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://matthewgthomas.co.uk/globalvuln/}
+  \item \url{https://humaniverse.github.io/globalvuln/}
 }
 
 }

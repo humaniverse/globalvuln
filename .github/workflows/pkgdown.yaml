@@ -44,7 +44,7 @@ jobs:
       - name: Verify explorer publication
         run: |
           test -f docs/indices-explorer.html
-          grep -Fq 'href="https://matthewgthomas.co.uk/globalvuln/indices-explorer.html"' docs/index.html
+          grep -Fq 'href="https://humaniverse.github.io/globalvuln/indices-explorer.html"' docs/index.html
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
