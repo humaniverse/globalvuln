@@ -101,13 +101,6 @@ collate_indices <- function(indices, format = c("wide", "long")) {
   build_wide_indices(index_data, indices, summaries)
 }
 
-.index_ids <- c(
-  "inform_risk", "inform_severity", "underfunded_crisis",
-  "oecd_fragility", "worldrisk", "nd_gain", "hdi", "mpi", "ghi", "ghs",
-  "wps", "un_mvi", "debt_distress", "searo", "disaster_displacement",
-  "internal_displacement"
-)
-
 validate_indices <- function(indices) {
   if (missing(indices)) {
     stop("`indices` is required and must contain at least one index identifier.",

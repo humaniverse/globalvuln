@@ -11,13 +11,17 @@ development, hunger, health, gender, debt, safeguarding, and displacement
 indices.
 }
 \details{
-The package provides three complementary interfaces:
+The package provides complementary interfaces for reproducible and current
+analysis:
 \itemize{
 \item \code{\link[=collate_indices]{collate_indices()}} combines a user-selected set of indices in wide or
 long form.
 \item The 16 datasets documented in \link{individual_indices} expose one index at a
 time on the same 195-country geography.
 \item \link{humanitarian_index_sources} records source and provenance metadata.
+\item \code{\link[=globalvuln_data]{globalvuln_data()}} explicitly selects the installed snapshot or latest
+approved online data.
+\item \code{\link[=source_status]{source_status()}} reports cadence-aware source status.
 }
 
 Publisher scores retain their original scales. Computed ranks and deciles
@@ -34,11 +38,6 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Matthew Gwynfryn Thomas \email{matthewgthomas@gmail.com}
-
-Authors:
-\itemize{
-  \item Matthew Gwynfryn Thomas \email{matthewgthomas@gmail.com}
-}
 
 }
 \keyword{internal}

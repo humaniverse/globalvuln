@@ -1,0 +1,10 @@
+List of LIC DSAs for PRGT-Eligible Countries
+As of March 31, 2026
+
+1       Afghanistan                    6/28/2021       High                 Sustainable       Yes
+13      Congo, Democratic Republic of  7/16/2025       Moderate                               Yes
+15      Cote d'Ivoire                  2/11/2026       Moderate                               Yes
+18      Eritrea
+30      Lao P.D.R.                     2/20/2026       In debt distress     Unsustainable     Yes
+49      Sao Tome and Principe          12/23/2025      In debt distress 5/  Sustainable       Yes
+68      Zimbabwe 4/                    10/2/2025       In debt distress     Unsustainable     Yes

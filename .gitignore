@@ -48,3 +48,8 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 docs
+
+# Data pipeline working state and review artifacts
+_targets/
+artifacts/
+data-raw/downloads/

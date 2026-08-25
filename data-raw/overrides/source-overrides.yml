@@ -1,0 +1,47 @@
+inform_severity:
+  worksheet: "INFORM Severity - country"
+  header_row: 2
+  aggregation: "The publisher country sheet is used; one row is expected per ISO3."
+debt_distress:
+  classification_order:
+    Low: 1
+    Moderate: 2
+    High: 3
+    In debt distress: 4
+  ranking: false
+inform_risk:
+  worksheet_pattern: "^INFORM Risk 20[0-9]{2} \\(a-z\\)$"
+  score_column: 3
+underfunded_crisis:
+  payload_field: "cum_percent_met"
+  transformation: "Multiply the published proportion by 100; exclude Regional: response plans."
+oecd_fragility:
+  decimal_mark: ","
+  score_field: "overall"
+worldrisk:
+  score_column: 3
+nd_gain:
+  archive_member_pattern: "(^|/)gain/gain[.]csv$"
+  year_selection: "Latest four-digit column"
+hdi:
+  score_field_pattern: "^hdi_[0-9]{4}$"
+  year_selection: "Latest four-digit suffix"
+mpi:
+  worksheet: "gMPI_Table1"
+  country_reference_year: true
+ghi:
+  censored_values: "Retain publisher labels and leave numeric score missing."
+ghs:
+  edition_selection: "Latest value in Year"
+wps:
+  worksheet: "TABLE 1"
+un_mvi:
+  extraction: "Overall MVI value from the first three PDF pages"
+searo:
+  worksheet: "SEARO"
+disaster_displacement:
+  acquisition: "Manual IDMC GDRM 2.0 country export"
+  required_filters: "Current; AAD; Multi-hazard or All; Country"
+internal_displacement:
+  worksheet_pattern: "^IDI 2022 values[[:space:]]*$"
+  score_column: 46

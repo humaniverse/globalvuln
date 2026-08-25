@@ -3,7 +3,11 @@
 ^\.Rproj\.user$
 ^\.github$
 ^\.DS_Store$
+^\.git$
 ^LICENSE\.md$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^_targets$
+^artifacts$
+^data-published$

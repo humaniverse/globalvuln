@@ -46,6 +46,14 @@ jobs:
           test -f docs/indices-explorer.html
           grep -Fq 'href="https://humaniverse.github.io/globalvuln/indices-explorer.html"' docs/index.html
 
+      - name: Publish approved data board
+        run: |
+          mkdir -p docs/data
+          cp -R data-published/. docs/data/
+
+      - name: Validate published data board
+        run: Rscript data-raw/validate-pins-board.R docs/data
+
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0

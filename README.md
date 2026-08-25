@@ -4,6 +4,9 @@
 global vulnerability, fragility, development, hunger, health, gender, debt,
 safeguarding, and displacement indices.
 
+[![R-CMD-check](https://github.com/humaniverse/globalvuln/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/humaniverse/globalvuln/actions/workflows/R-CMD-check.yaml)
+[![Data pipeline](https://github.com/humaniverse/globalvuln/actions/workflows/update-data.yaml/badge.svg)](https://github.com/humaniverse/globalvuln/actions/workflows/update-data.yaml)
+
 Publisher scores remain on their original scales. The package standardises
 only rank and decile direction, so rank 1 and decile 1 always mean **most
 vulnerable** within the countries scored by that index.
@@ -60,6 +63,38 @@ The individual objects are `inform_risk`, `inform_severity`,
 `underfunded_crisis`, `oecd_fragility`, `worldrisk`, `nd_gain`, `hdi`, `mpi`,
 `ghi`, `ghs`, `wps`, `un_mvi`, `debt_distress`, `searo`,
 `disaster_displacement`, and `internal_displacement`.
+
+### Bundled and current data
+
+`collate_indices()` and the individual objects always use the immutable data
+installed with the package. Use `globalvuln_data()` when you want to choose the
+freshness mode explicitly:
+
+```r
+# Reproducible and offline: the installed package snapshot
+package_snapshot <- globalvuln_data(
+  source = "package",
+  indices = c("inform_severity", "debt_distress")
+)
+
+# Current: latest human-approved data from the versioned public board
+latest_approved <- globalvuln_data(
+  source = "latest",
+  indices = c("inform_severity", "debt_distress")
+)
+
+# Cadence-aware provenance status for the installed snapshot
+source_status(source = "package")
+```
+
+Online retrieval errors never silently fall back to package data. A specific
+published board version can be requested with `version =` for reproducible
+current-data analysis.
+
+The repository-owned update pipeline checks 15 public sources each day. The
+IDMC Disaster Displacement Risk Model uses the same validation contract through
+a documented manual country-export path because no stable machine-readable
+country download is currently available.
 
 ### Index catalogue
 

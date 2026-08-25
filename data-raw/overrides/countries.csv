@@ -1,0 +1,14 @@
+index_id,source_country_name,iso3,reason,introduced_date
+underfunded_crisis,Rohingya JRP,BGD,Publisher context is the Bangladesh Rohingya response plan,2026-08-25
+ghs,São Tomé and Príncipe,STP,Publisher diacritics are not resolved consistently across countrycode versions,2026-08-25
+debt_distress,"Congo, Democratic Republic of",COD,IMF name differs from ISO short name,2026-08-25
+debt_distress,"Congo, Republic of",COG,IMF name differs from ISO short name,2026-08-25
+debt_distress,Cote d'Ivoire,CIV,PDF text extraction removes the circumflex,2026-08-25
+debt_distress,"Gambia, The",GMB,IMF inverted country name,2026-08-25
+debt_distress,Kyrgyz Republic,KGZ,IMF formal country name,2026-08-25
+debt_distress,Lao P.D.R.,LAO,IMF abbreviated country name,2026-08-25
+debt_distress,Micronesia,FSM,IMF short country name,2026-08-25
+debt_distress,Moldova,MDA,IMF short country name,2026-08-25
+debt_distress,Sao Tome and Principe,STP,PDF text extraction removes diacritics,2026-08-25
+debt_distress,Timor Leste,TLS,IMF country name omits hyphen,2026-08-25
+debt_distress,"Yemen, Republic of",YEM,IMF formal country name,2026-08-25

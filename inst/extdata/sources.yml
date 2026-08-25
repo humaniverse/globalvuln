@@ -1,0 +1,64 @@
+inform_risk:
+  name: "INFORM Risk"
+  cadence: "annual"
+  expected_publication_months: [8, 9, 10]
+inform_severity:
+  name: "INFORM Severity"
+  cadence: "monthly"
+  expected_publication_months: null
+underfunded_crisis:
+  name: "Underfunded Crisis Index"
+  cadence: "annual"
+  expected_publication_months: [10, 11, 12]
+oecd_fragility:
+  name: "OECD Multidimensional Fragility"
+  cadence: "biennial"
+  expected_publication_months: null
+worldrisk:
+  name: "WorldRiskIndex"
+  cadence: "annual"
+  expected_publication_months: [9, 10]
+nd_gain:
+  name: "ND-GAIN Country Index"
+  cadence: "annual"
+  expected_publication_months: null
+hdi:
+  name: "Human Development Index"
+  cadence: "annual"
+  expected_publication_months: null
+mpi:
+  name: "Multidimensional Poverty Index"
+  cadence: "annual"
+  expected_publication_months: [9, 10, 11]
+ghi:
+  name: "Global Hunger Index"
+  cadence: "annual"
+  expected_publication_months: [10]
+ghs:
+  name: "Global Health Security Index"
+  cadence: "irregular"
+  expected_publication_months: null
+wps:
+  name: "Women, Peace and Security Index"
+  cadence: "biennial"
+  expected_publication_months: null
+un_mvi:
+  name: "UN Multidimensional Vulnerability Index"
+  cadence: "irregular"
+  expected_publication_months: null
+debt_distress:
+  name: "Debt-distress classification"
+  cadence: "event_driven"
+  expected_publication_months: null
+searo:
+  name: "Sexual Exploitation and Abuse Risk Overview"
+  cadence: "annual"
+  expected_publication_months: null
+disaster_displacement:
+  name: "Disaster Displacement Risk Model"
+  cadence: "irregular"
+  expected_publication_months: null
+internal_displacement:
+  name: "Internal Displacement Index"
+  cadence: "irregular"
+  expected_publication_months: null

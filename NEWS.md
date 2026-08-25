@@ -1,3 +1,13 @@
+# globalvuln 0.2.0
+
+* Added a registry-driven `{targets}` data pipeline with strict validation,
+  change analysis, provenance, and atomic publication.
+* Added automated adapters for 15 public sources and a validated manual
+  ingestion adapter for the IDMC disaster-displacement model.
+* Added `globalvuln_data()` for explicit bundled or approved live data access.
+* Added `source_status()` for cadence-aware source freshness information.
+* Added a versioned static `{pins}` board and scheduled update pull requests.
+
 # globalvuln 0.1.0
 
 * Added `collate_indices()` to combine a user-selected set of indices in wide
