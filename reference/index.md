@@ -4,6 +4,8 @@
 
 - [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md)
   : Collate selected humanitarian vulnerability indices
+- [`globalvuln_data()`](https://humaniverse.github.io/globalvuln/reference/globalvuln_data.md)
+  : Retrieve bundled or latest approved globalvuln data
 - [`humanitarian_index_sources`](https://humaniverse.github.io/globalvuln/reference/humanitarian_index_sources.md)
   : Sources and provenance for the humanitarian indices
 - [`individual_indices`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
@@ -24,3 +26,5 @@
   [`disaster_displacement`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   [`internal_displacement`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   : Individual humanitarian index datasets
+- [`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md)
+  : Report cadence-aware source status

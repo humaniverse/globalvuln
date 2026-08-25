@@ -6,7 +6,8 @@ displacement indices.
 
 ## Details
 
-The package provides three complementary interfaces:
+The package provides complementary interfaces for reproducible and
+current analysis:
 
 - [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md)
   combines a user-selected set of indices in wide or long form.
@@ -17,6 +18,13 @@ The package provides three complementary interfaces:
 
 - [humanitarian_index_sources](https://humaniverse.github.io/globalvuln/reference/humanitarian_index_sources.md)
   records source and provenance metadata.
+
+- [`globalvuln_data()`](https://humaniverse.github.io/globalvuln/reference/globalvuln_data.md)
+  explicitly selects the installed snapshot or latest approved online
+  data.
+
+- [`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md)
+  reports cadence-aware source status.
 
 Publisher scores retain their original scales. Computed ranks and
 deciles have a common direction: rank 1 and decile 1 always identify the
@@ -32,7 +40,3 @@ Useful links:
 ## Author
 
 **Maintainer**: Matthew Gwynfryn Thomas <matthewgthomas@gmail.com>
-
-Authors:
-
-- Matthew Gwynfryn Thomas <matthewgthomas@gmail.com>

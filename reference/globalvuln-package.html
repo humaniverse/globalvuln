@@ -11,7 +11,7 @@ indices."><meta property="og:image" content="https://humaniverse.github.io/globa
 
     <a class="navbar-brand me-2" href="../index.html">globalvuln</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -44,11 +44,15 @@ indices.</p>
 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The package provides three complementary interfaces:</p><ul><li><p><code><a href="collate_indices.html">collate_indices()</a></code> combines a user-selected set of indices in wide or
+    <p>The package provides complementary interfaces for reproducible and current
+analysis:</p><ul><li><p><code><a href="collate_indices.html">collate_indices()</a></code> combines a user-selected set of indices in wide or
 long form.</p></li>
 <li><p>The 16 datasets documented in <a href="individual_indices.html">individual_indices</a> expose one index at a
 time on the same 195-country geography.</p></li>
 <li><p><a href="humanitarian_index_sources.html">humanitarian_index_sources</a> records source and provenance metadata.</p></li>
+<li><p><code><a href="globalvuln_data.html">globalvuln_data()</a></code> explicitly selects the installed snapshot or latest
+approved online data.</p></li>
+<li><p><code><a href="source_status.html">source_status()</a></code> reports cadence-aware source status.</p></li>
 </ul><p>Publisher scores retain their original scales. Computed ranks and deciles
 have a common direction: rank 1 and decile 1 always identify the most
 vulnerable observations within an index's published numeric coverage.
@@ -62,8 +66,7 @@ Top-10 and top-20 summaries use ranks, not deciles.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p><strong>Maintainer</strong>: Matthew Gwynfryn Thomas <a href="mailto:matthewgthomas@gmail.com">matthewgthomas@gmail.com</a></p>
-<p>Authors:</p><ul><li><p>Matthew Gwynfryn Thomas <a href="mailto:matthewgthomas@gmail.com">matthewgthomas@gmail.com</a></p></li>
-</ul></div>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
