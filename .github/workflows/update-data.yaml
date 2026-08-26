@@ -77,12 +77,16 @@ jobs:
         shell: bash
         run: |
           branch="data-update/$(date -u +%Y-%m-%d)-${GITHUB_RUN_ID}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git switch -c "$branch"
-          git add data data-raw/approved data-published inst/extdata/source_manifest.csv
-          git commit -m "Data update: approved vulnerability indices"
-          git push --set-upstream origin "$branch"
+          if git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "Reusing update branch created by an earlier run attempt: $branch"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git switch -c "$branch"
+            git add data data-raw/approved data-published inst/extdata/source_manifest.csv
+            git commit -m "Data update: approved vulnerability indices"
+            git push --set-upstream origin "$branch"
+          fi
           gh label create automated-data-update --color 1D76DB --force
           gh pr create \
             --base "${GITHUB_REF_NAME}" \
