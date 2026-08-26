@@ -60,7 +60,7 @@ source_status(source = "package", as_of = as.Date("2026-08-25"))
 #> 6          2026 release+e854c7fe             <NA>     2026-08-25       annual
 #> 7  Human Development Report 2025             <NA>     2026-08-04       annual
 #> 8                Global MPI 2025             <NA>     2026-08-04       annual
-#> 9                  2025+c9420f97             <NA>     2026-08-25       annual
+#> 9                  2025+6d7af17a             <NA>     2026-08-26       annual
 #> 10                          2021             <NA>     2026-08-04    irregular
 #> 11                       2025/26             <NA>     2026-08-04     biennial
 #> 12      High-Level Panel results             <NA>     2026-08-04    irregular
