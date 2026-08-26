@@ -1,0 +1,10 @@
+file: humanitarian_index_sources.rds
+file_size: 3976
+pin_hash: 3cfa5200bafc302d
+type: rds
+title: 'humanitarian_index_sources: a pinned 19 x 24 data frame'
+description: Approved globalvuln source provenance
+tags: ~
+urls: ~
+created: 20260826T125813Z
+api_version: 1
