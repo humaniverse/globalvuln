@@ -27,6 +27,34 @@ Install the development version from GitHub:
 pak::pak("humaniverse/globalvuln")
 ```
 
+## Package structure
+
+The repository contains both an ordinary R data package and the pipeline
+that maintains its data. The installed package is intentionally smaller
+than the repository: maintenance directories such as `data-raw/`,
+`data-published/`, `_targets/`, and `.github/` are excluded by
+`.Rbuildignore`.
+
+| Path | Role |
+|----|----|
+| `R/` | Installed functions. [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md) combines bundled datasets, [`globalvuln_data()`](https://humaniverse.github.io/globalvuln/reference/globalvuln_data.md) selects bundled or online data, and [`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md) reports provenance status. |
+| `data/` | The 16 compressed `.rda` datasets and `humanitarian_index_sources` that form the immutable snapshot in an installed package. |
+| `inst/extdata/` | Installed source registry and approved manifest used for cadence and provenance reporting. |
+| `man/` | Generated help pages for the functions and datasets. |
+| `tests/testthat/` | Tests for the public API, common schema, source adapters, validation rules, and online-board contract. |
+| `data-raw/` | Repository-only update system: source catalogue, one adapter per publisher, standardisation and validation code, approved history, manual inputs, and country-name overrides. |
+| `_targets.R` | Defines the reproducible [`targets`](https://books.ropensci.org/targets/) graph that runs the source adapters and publication steps. |
+| `data-published/` | Versioned static [`pins`](https://pins.rstudio.com/) board containing approved historical data and provenance. The website publishes it at `https://humaniverse.github.io/globalvuln/data/`. |
+| `.github/workflows/` | Runs package checks, the daily data-update pipeline, pull-request creation, and website/board deployment. |
+
+The runtime data flow is therefore separate from the maintenance flow:
+
+``` text
+installed package: data/*.rda  -> collate_indices() / globalvuln_data("package")
+published board:   data-published/ -> website -> globalvuln_data("latest")
+maintenance:       publishers -> data-raw adapters -> validation -> reviewed PR
+```
+
 ## Data
 
 Use
@@ -72,13 +100,29 @@ The individual objects are `inform_risk`, `inform_severity`,
 `mpi`, `ghi`, `ghs`, `wps`, `un_mvi`, `debt_distress`, `searo`,
 `disaster_displacement`, and `internal_displacement`.
 
-### Bundled and current data
+### Snapshot versus latest data
 
-[`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md)
-and the individual objects always use the immutable data installed with
-the package. Use
+There are two explicit data modes. They share the same canonical schema
+and ranking rules, but differ in where the data come from and when they
+can change.
+
+- **Package snapshot:**
+  [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md),
+  `data(<index_id>)`, and `globalvuln_data(source = "package")` load the
+  `.rda` files installed with the package. These calls are offline and
+  reproducible: reinstalling or upgrading the package is the only way
+  that snapshot changes.
+- **Latest approved:** `globalvuln_data(source = "latest")` reads the
+  public, versioned `pins` board. It downloads the approved historical
+  table, uses its manifest to select the newest approved edition of each
+  requested index, and then returns long or wide output. This mode can
+  change without a package upgrade and requires network access.
+
+The default for
 [`globalvuln_data()`](https://humaniverse.github.io/globalvuln/reference/globalvuln_data.md)
-when you want to choose the freshness mode explicitly:
+is `source = "latest"`; the other package interfaces continue to use the
+installed snapshot. Choose the source in code rather than relying on an
+implicit fallback:
 
 ``` r
 
@@ -98,9 +142,20 @@ latest_approved <- globalvuln_data(
 source_status(source = "package")
 ```
 
-Online retrieval errors never silently fall back to package data. A
-specific published board version can be requested with `version =` for
-reproducible current-data analysis.
+Both modes attach `globalvuln_source`, `globalvuln_version`, and
+`globalvuln_manifest` attributes to their result. Online retrieval
+errors never silently fall back to package data: if the board is
+unavailable, the call fails and tells you to request the package
+snapshot explicitly. A specific published version of the
+`humanitarian_indices` pin can be supplied with `version =` to freeze an
+online analysis. `version` is not accepted for package data because the
+installed files already are a fixed version.
+
+[`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md)
+evaluates the manifest against each publisher’s configured cadence. For
+example, it treats monthly and annual sources differently and does not
+label an irregular or multi-year source stale merely because its latest
+edition is old.
 
 The repository-owned update pipeline checks 15 public sources each day.
 The IDMC Disaster Displacement Risk Model uses the same validation
@@ -131,6 +186,60 @@ stable machine-readable country download is currently available.
 Use `humanitarian_index_sources` for publisher URLs, editions, reference
 years, retrieval dates, source-file checksums, coverage, and licensing
 notes.
+
+## How the data is updated
+
+The update process is conservative: detecting a publisher change creates
+a candidate, not an immediate production update.
+
+1.  At 05:23 UTC each day, or on manual dispatch, the `update-data.yaml`
+    GitHub Actions workflow runs
+    [`targets::tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html).
+2.  `_targets.R` reads the authoritative `data-raw/sources.yml`
+    catalogue and branches over the 15 automated sources. Discovery is
+    always rerun so a new publisher release can be noticed even when the
+    rest of the graph is cached.
+3.  Each source follows the same adapter contract:
+    `discover -> download -> parse -> standardise -> validate -> compare`.
+    Downloads are temporary; content signatures are checked before
+    parsing so, for example, an HTML error page cannot be accepted as a
+    workbook or PDF.
+4.  The adapter maps publisher country names to the common geography,
+    preserves publisher scores and labels, expands the result to the
+    195-country grid, and calculates consistently directed ranks and
+    deciles. Source-specific and package-wide validation then checks
+    schema, keys, coverage, score ranges, and other source contracts. A
+    failed candidate stops publication.
+5.  The candidate is compared with the previously approved edition. The
+    source checksum and version determine whether it changed, while the
+    review report records coverage, missingness, score shifts, rank
+    correlation, and movement into or out of the top 20.
+6.  If at least one source changed, the pipeline appends its edition to
+    `data-raw/approved/humanitarian_indices.rds`, appends provenance to
+    the approved manifest, refreshes the current `data/*.rda` views, and
+    writes new versions of both pins in `data-published/`. Historical
+    editions remain in the approved history and versioned board.
+7.  CI validates the board, runs the source and package tests, and runs
+    `R CMD check`. Only after all checks pass does automation open a
+    labelled data-update pull request; it never writes directly to
+    `main`. A maintainer reviews and merges that pull request.
+8.  The pkgdown workflow publishes the merged `data-published/` board
+    under the package website. Online `source = "latest"` calls can then
+    see it. The bundled snapshot reaches users when they install a
+    package build containing the refreshed `data/*.rda` files.
+
+If no source checksum/version changed, the workflow reports that outcome
+and opens no pull request. If another automated data-update pull request
+is already open, a newly detected candidate is deferred instead of
+creating an overlapping update.
+
+The Disaster Displacement Risk Model is the one non-automated source
+because IDMC currently provides no stable machine-readable country
+download. A maintainer exports the documented country table into the
+manual template and runs it through the same standardisation,
+validation, comparison, publication, and pull-request gates. Detailed
+maintenance instructions are in
+[`data-raw/README.md`](https://humaniverse.github.io/globalvuln/data-raw/README.md).
 
 ## Interpretation
 
