@@ -5,6 +5,11 @@ if (!dir.exists(board_path)) {
   stop("Pins board directory does not exist: ", board_path, call. = FALSE)
 }
 
+landing_page <- file.path(board_path, "index.html")
+if (!file.exists(landing_page)) {
+  stop("Pins board is missing its web landing page: ", landing_page, call. = FALSE)
+}
+
 board <- pins::board_folder(board_path, versioned = TRUE)
 expected <- c("humanitarian_indices", "humanitarian_index_sources")
 available <- pins::pin_list(board)

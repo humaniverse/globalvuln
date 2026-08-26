@@ -52,7 +52,9 @@ jobs:
           cp -R data-published/. docs/data/
 
       - name: Validate published data board
-        run: Rscript data-raw/validate-pins-board.R docs/data
+        run: |
+          Rscript data-raw/validate-pins-board.R docs/data
+          grep -Fq '<h1>globalvuln data board</h1>' docs/data/index.html
 
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'

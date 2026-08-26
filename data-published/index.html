@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The public, versioned data board for the globalvuln R package.">
+  <title>globalvuln data board</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    body {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+
+    h1 {
+      line-height: 1.1;
+    }
+
+    code {
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      background: color-mix(in srgb, CanvasText 8%, Canvas);
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>globalvuln data board</h1>
+    <p>
+      This is the public, versioned <a href="https://pins.rstudio.com/">pins</a>
+      board containing the latest approved global vulnerability index data and
+      its provenance metadata.
+    </p>
+    <p>
+      R users can read it with
+      <code>globalvuln_data(source = "latest")</code>. The board catalogue is
+      also available as <a href="_pins.yaml"><code>_pins.yaml</code></a> for
+      machine-readable access.
+    </p>
+    <nav aria-label="Related links">
+      <a href="../">Package website</a>
+      <a href="../indices-explorer.html">Explore the indices</a>
+      <a href="https://github.com/humaniverse/globalvuln">Source code</a>
+    </nav>
+  </main>
+</body>
+</html>
