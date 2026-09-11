@@ -19,8 +19,9 @@ collate_indices(indices, format = c("wide", "long"))
   identifiers are `inform_risk`, `inform_severity`,
   `underfunded_crisis`, `oecd_fragility`, `worldrisk`, `nd_gain`, `hdi`,
   `mpi`, `ghi`, `ghs`, `wps`, `un_mvi`, `debt_distress`, `searo`,
-  `disaster_displacement`, and `internal_displacement`. Identifiers must
-  be unique and their supplied order is preserved.
+  `disaster_displacement`, `internal_displacement`, and `clif_vi` (2050
+  pessimistic projection). Identifiers must be unique and their supplied
+  order is preserved.
 
 - format:
 

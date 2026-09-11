@@ -12,7 +12,7 @@ humanitarian_index_sources
 
 ## Format
 
-A data frame with 17 rows and 17 variables:
+A data frame with 18 rows and 17 variables:
 
 - source_id:
 
@@ -85,8 +85,8 @@ A data frame with 17 rows and 17 variables:
 
 ## Source
 
-Publisher pages in the `source_url` column. Metadata snapshot: 4 August
-2026.
+Publisher pages in the `source_url` column. Retrieval dates are recorded
+separately for each source.
 
 ## Details
 

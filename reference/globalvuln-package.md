@@ -1,6 +1,6 @@
 # globalvuln: Global Humanitarian Vulnerability Indices
 
-Country-level data from 16 published global vulnerability, fragility,
+Country-level data from 17 published global vulnerability, fragility,
 development, hunger, health, gender, debt, safeguarding, and
 displacement indices.
 
@@ -12,7 +12,7 @@ current analysis:
 - [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md)
   combines a user-selected set of indices in wide or long form.
 
-- The 16 datasets documented in
+- The 17 datasets documented in
   [individual_indices](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   expose one index at a time on the same 195-country geography.
 

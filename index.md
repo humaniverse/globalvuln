@@ -14,7 +14,7 @@ always mean **most vulnerable** within the countries scored by that
 index.
 
 > **Interactive explorer:** [Compare the structure, coverage, concepts,
-> and sources of all 16
+> and sources of all 17
 > indices](https://humaniverse.github.io/globalvuln/indices-explorer.html).
 
 ## Installation
@@ -38,7 +38,7 @@ than the repository: maintenance directories such as `data-raw/`,
 | Path | Role |
 |----|----|
 | `R/` | Installed functions. [`collate_indices()`](https://humaniverse.github.io/globalvuln/reference/collate_indices.md) combines bundled datasets, [`globalvuln_data()`](https://humaniverse.github.io/globalvuln/reference/globalvuln_data.md) selects bundled or online data, and [`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md) reports provenance status. |
-| `data/` | The 16 compressed `.rda` datasets and `humanitarian_index_sources` that form the immutable snapshot in an installed package. |
+| `data/` | The 17 compressed `.rda` datasets and `humanitarian_index_sources` that form the immutable snapshot in an installed package. |
 | `inst/extdata/` | Installed source registry and approved manifest used for cadence and provenance reporting. |
 | `man/` | Generated help pages for the functions and datasets. |
 | `tests/testthat/` | Tests for the public API, common schema, source adapters, validation rules, and online-board contract. |
@@ -98,7 +98,8 @@ data(package = "globalvuln")
 The individual objects are `inform_risk`, `inform_severity`,
 `underfunded_crisis`, `oecd_fragility`, `worldrisk`, `nd_gain`, `hdi`,
 `mpi`, `ghi`, `ghs`, `wps`, `un_mvi`, `debt_distress`, `searo`,
-`disaster_displacement`, and `internal_displacement`.
+`disaster_displacement`, `internal_displacement`, and `clif_vi` (2050
+pessimistic).
 
 ### Snapshot versus latest data
 
@@ -183,6 +184,23 @@ stable machine-readable country download is currently available.
 | `disaster_displacement` | [IDMC Global Displacement Risk Model](https://www.internal-displacement.org/displacement-risk/) | Modelled risk of future disaster displacement, including expected annual displacement under current-climate hazard scenarios. |
 | `internal_displacement` | [IDMC Internal Displacement Index](https://www.internal-displacement.org/25-years-of-progress-on-internal-displacement-1998-2023/) | National policies and capacity, contextual drivers, and current impacts associated with internal displacement. |
 
+`clif_vi` \| [Climate Finance Vulnerability Index (CliF-VI), 2050
+pessimistic](https://clifvi.org/wp-content/uploads/2025/06/Climate-Finance-Vulnerability-Index-Technical-Methodology.pdf)
+\| Projected climate risk and financial barriers to adaptation finance,
+combining climate risk with debt sustainability, financial integration,
+and financial sophistication. \|
+
+CliF-VI uses the 2025 prototype and the 2050 pessimistic projection,
+covering 188 countries on a 0–100 scale with higher values indicating
+greater vulnerability. Scores retain publisher precision; package ranks
+run from most to least vulnerable, reversing the publisher’s rank
+direction. Its ranks contribute to top-10 and top-20 summaries when
+selected. Climate risk includes INFORM Risk 2025 and INFORM Climate
+Change 2022 projections, so it overlaps with INFORM and does not measure
+current conditions alone. Supplementary governance scores are excluded.
+Redistribution permission is unconfirmed; cite Columbia University
+NCDP/CGEP and the June 2025 methodology.
+
 Use `humanitarian_index_sources` for publisher URLs, editions, reference
 years, retrieval dates, source-file checksums, coverage, and licensing
 notes.
@@ -201,9 +219,9 @@ already supports.
     GitHub Actions workflow runs
     [`targets::tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html).
 2.  `_targets.R` reads the authoritative `data-raw/sources.yml`
-    catalogue and branches over the 15 automated sources. Discovery is
-    always rerun so a new publisher release can be noticed even when the
-    rest of the graph is cached.
+    catalogue and branches over the 16 automated sources. Discovery and
+    downloads are always rerun so releases and revisions at stable URLs
+    are detected even when the rest of the graph is cached.
 3.  Each source follows the same adapter contract:
     `discover -> download -> parse -> standardise -> validate -> compare`.
     Downloads are temporary; content signatures are checked before

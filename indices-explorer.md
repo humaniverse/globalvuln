@@ -1,15 +1,15 @@
-# Sixteen ways of seeing vulnerability.
+# Seventeen ways of seeing vulnerability.
 
 Methodology atlas
 
-# Sixteen ways of seeing vulnerability.
+# Seventeen ways of seeing vulnerability.
 
 Explore what each index measures, how its methodology is built, which
 data it reuses, and where country coverage differs. Conceptual
 similarity, exact data reuse, and shared publishers are kept
 deliberately separate.
 
-**16**indices and assessments
+**17**indices and assessments
 
 **—**documented analytical leaves
 
@@ -151,3 +151,6 @@ snapshot:
 - [Internal Displacement
   Index](https://www.internal-displacement.org/25-years-of-progress-on-internal-displacement-1998-2023/)
   — IDI 2023 publication
+- [CliF-VI (2050
+  pessimistic)](https://clifvi.org/wp-content/uploads/2025/06/Climate-Finance-Vulnerability-Index-Technical-Methodology.pdf)
+  — 2025 prototype

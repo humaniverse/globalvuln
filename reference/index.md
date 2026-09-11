@@ -25,6 +25,7 @@
   [`searo`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   [`disaster_displacement`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   [`internal_displacement`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
+  [`clif_vi`](https://humaniverse.github.io/globalvuln/reference/individual_indices.md)
   : Individual humanitarian index datasets
 - [`source_status()`](https://humaniverse.github.io/globalvuln/reference/source_status.md)
   : Report cadence-aware source status
