@@ -174,6 +174,10 @@ retrieval dates, source-file checksums, coverage, and licensing notes.
 The update process is conservative: detecting a publisher change creates a
 candidate, not an immediate production update.
 
+Maintainers adding an entirely new index should follow
+[`ADDING-DATASETS.md`](ADDING-DATASETS.md). The steps below describe routine
+updates to sources that the package already supports.
+
 1. At 05:23 UTC each day, or on manual dispatch, the
    `update-data.yaml` GitHub Actions workflow runs `targets::tar_make()`.
 2. `_targets.R` reads the authoritative `data-raw/sources.yml` catalogue and
