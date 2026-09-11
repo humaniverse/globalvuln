@@ -7,8 +7,9 @@
 #' @param indices A non-empty character vector of index identifiers. Available
 #'   identifiers are `inform_risk`, `inform_severity`, `underfunded_crisis`,
 #'   `oecd_fragility`, `worldrisk`, `nd_gain`, `hdi`, `mpi`, `ghi`, `ghs`,
-#'   `wps`, `un_mvi`, `debt_distress`, `searo`, `disaster_displacement`, and
-#'   `internal_displacement`. Identifiers must be unique and their supplied
+#'   `wps`, `un_mvi`, `debt_distress`, `searo`, `disaster_displacement`,
+#'   `internal_displacement`, and `clif_vi` (2050 pessimistic projection).
+#'   Identifiers must be unique and their supplied
 #'   order is preserved.
 #' @param format Output layout: `"wide"` (the default) or `"long"`.
 #'

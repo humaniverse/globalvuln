@@ -4,7 +4,7 @@
 #' for every index source and the United Nations M49 geography source used to
 #' create the package datasets.
 #'
-#' @format A data frame with 17 rows and 17 variables:
+#' @format A data frame with 18 rows and 17 variables:
 #' \describe{
 #'   \item{source_id}{Stable source identifier. For index sources this equals
 #'   `index_id`; `un_m49` identifies the geography source.}
@@ -32,8 +32,8 @@
 #' an index. The `local_file` paths describe the reproducible source pipeline
 #' and are not paths within an installed `globalvuln` package.
 #'
-#' @source Publisher pages in the `source_url` column. Metadata snapshot:
-#' 4 August 2026.
+#' @source Publisher pages in the `source_url` column. Retrieval dates are
+#' recorded separately for each source.
 #' @seealso [collate_indices()], [individual_indices]
 #' @examples
 #' data(humanitarian_index_sources)
@@ -46,13 +46,13 @@
 
 #' Individual humanitarian index datasets
 #'
-#' Sixteen consistently structured datasets, one for each published index in
+#' Seventeen consistently structured datasets, one for each published index in
 #' the collection. Each uses the same 195-country master geography so datasets
 #' can be compared or collated by `iso3`; rows outside an index's published
 #' coverage contain missing source and score fields.
 #'
 #' @name individual_indices
-#' @aliases inform_risk inform_severity underfunded_crisis oecd_fragility worldrisk nd_gain hdi mpi ghi ghs wps un_mvi debt_distress searo disaster_displacement internal_displacement
+#' @aliases inform_risk inform_severity underfunded_crisis oecd_fragility worldrisk nd_gain hdi mpi ghi ghs wps un_mvi debt_distress searo disaster_displacement internal_displacement clif_vi
 #'
 #' @format Each object is a data frame with 195 rows and 19 variables:
 #' \describe{
@@ -140,9 +140,19 @@
 #' * `internal_displacement`: IDMC Internal Displacement Index, 2022 values
 #'   published in 2023. Measures policy, capacity, drivers, and impacts; lower
 #'   scores indicate greater vulnerability. Numeric coverage is 44 countries.
+#' * `clif_vi`: Climate Finance Vulnerability Index (CliF-VI), 2025 prototype,
+#'   2050 pessimistic projection. Combines climate risk with financial
+#'   vulnerability; higher scores indicate greater vulnerability. Scores cover
+#'   188 countries and retain publisher precision on the 0--100 scale. Ranks
+#'   are recalculated with 1 denoting most vulnerable, reversing the publisher's
+#'   ranking direction. Ranks contribute to top-10 and top-20 summaries.
+#'   Climate risk incorporates INFORM Risk 2025 and INFORM Climate Change
+#'   2022 projections; this is not an independent measure of current risk.
+#'   Supplementary governance scores are not part of the overall index.
 #'
-#' @source Publisher details and URLs are in [humanitarian_index_sources]. Data
-#' snapshot: 4 August 2026.
+#' @source Publisher details, URLs, and source-specific retrieval dates are in
+#' [humanitarian_index_sources]. CliF-VI uses the
+#' [June 2025 methodology](https://clifvi.org/wp-content/uploads/2025/06/Climate-Finance-Vulnerability-Index-Technical-Methodology.pdf).
 #' @seealso [collate_indices()], [humanitarian_index_sources]
 #' @examples
 #' data(inform_risk)

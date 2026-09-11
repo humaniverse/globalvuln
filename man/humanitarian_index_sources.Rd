@@ -5,7 +5,7 @@
 \alias{humanitarian_index_sources}
 \title{Sources and provenance for the humanitarian indices}
 \format{
-A data frame with 17 rows and 17 variables:
+A data frame with 18 rows and 17 variables:
 \describe{
 \item{source_id}{Stable source identifier. For index sources this equals
 \code{index_id}; \code{un_m49} identifies the geography source.}
@@ -28,8 +28,8 @@ A data frame with 17 rows and 17 variables:
 }
 }
 \source{
-Publisher pages in the \code{source_url} column. Metadata snapshot:
-4 August 2026.
+Publisher pages in the \code{source_url} column. Retrieval dates are
+recorded separately for each source.
 }
 \usage{
 humanitarian_index_sources

@@ -381,3 +381,27 @@ internal_displacement:
   redistribution_allowed: false
   terms_url: "https://www.internal-displacement.org/terms-and-conditions/"
   adapter_version: "1.0.0"
+
+clif_vi:
+  name: "Climate Finance Vulnerability Index (2050 pessimistic)"
+  publisher: "Columbia University: National Center for Disaster Preparedness and Center on Global Energy Policy"
+  homepage_url: "https://clifvi.org/"
+  data_url: "https://clifvi.org/"
+  methodology_url: "https://clifvi.org/wp-content/uploads/2025/06/Climate-Finance-Vulnerability-Index-Technical-Methodology.pdf"
+  adapter: "clif_vi"
+  cadence: "irregular"
+  expected_publication_months: null
+  automated: true
+  implemented: true
+  discovery_method: "stable_url_checksum"
+  vulnerability_direction: "higher_is_worse"
+  score_min: 0
+  score_max: 100
+  expected_min_countries: 188
+  expected_max_countries: 188
+  eligible_for_counts: true
+  expected_file_type: "html"
+  license: "Publisher terms not explicitly stated; cite Columbia University NCDP/CGEP, CliF-VI 2025 prototype (2050 pessimistic); redistribution permission unconfirmed"
+  redistribution_allowed: null
+  terms_url: "https://clifvi.org/"
+  adapter_version: "1.0.0"

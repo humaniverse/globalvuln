@@ -22,6 +22,7 @@ const CANONICAL_INDEX_IDS = [
   "searo",
   "disaster_displacement",
   "internal_displacement",
+  "clif_vi",
 ];
 
 const ALLOWED_SOURCE_TYPES = new Set(["provider", "dataset", "series"]);
@@ -73,6 +74,7 @@ const EXPECTED_EDITION_COUNTS = new Map([
   ["searo", { analyticalLeafCount: 30, rawInputCount: 30 }],
   ["disaster_displacement", { analyticalLeafCount: null, rawInputCount: null }],
   ["internal_displacement", { analyticalLeafCount: 18, rawInputCount: 43 }],
+  ["clif_vi", { analyticalLeafCount: 24, rawInputCount: null }],
 ]);
 
 const EXPECTED_CONCEPTS = new Map([
@@ -170,7 +172,7 @@ function checkCanonicalIndexIds(indices) {
   const expected = new Set(CANONICAL_INDEX_IDS);
   const actualSet = new Set(actual);
 
-  check(indices.length === CANONICAL_INDEX_IDS.length, "indices must contain exactly 16 records");
+  check(indices.length === CANONICAL_INDEX_IDS.length, "indices must contain exactly 17 records");
   for (const id of CANONICAL_INDEX_IDS) {
     check(actualSet.has(id), `indices is missing canonical id ${JSON.stringify(id)}`);
   }
@@ -236,7 +238,7 @@ const noscript = html.match(/<noscript\b[^>]*>([\s\S]*?)<\/noscript\s*>/i);
 check(Boolean(noscript), "explorer must include a no-JavaScript catalogue");
 if (noscript) {
   const catalogueItems = noscript[1].match(/<li\b/g) ?? [];
-  check(catalogueItems.length === 16, `no-JavaScript catalogue must list 16 indices; found ${catalogueItems.length}`);
+  check(catalogueItems.length === CANONICAL_INDEX_IDS.length, `no-JavaScript catalogue must list 17 indices; found ${catalogueItems.length}`);
 }
 
 const blankTargetLinks = html.match(/<a\b(?=[^>]*\btarget\s*=\s*["']_blank["'])[^>]*>/gi) ?? [];
@@ -777,7 +779,7 @@ const mapSource = requireObject(map.source, "map.source");
 requireString(mapSource.label, "map.source.label");
 checkOptionalHttpUrl(mapSource.url, "map.source.url");
 
-check(coverage.length === 3120, "coverage must contain exactly 3,120 records");
+check(coverage.length === CANONICAL_INDEX_IDS.length * 195, "coverage must contain exactly 3,315 records");
 const coverageKeys = new Set();
 const coverageByIndex = new Map(CANONICAL_INDEX_IDS.map((id) => [id, new Set()]));
 const coverageCountByIndex = new Map(CANONICAL_INDEX_IDS.map((id) => [id, 0]));
@@ -825,7 +827,7 @@ for (const [indexId, count] of coverageCountByIndex) {
   check(count === 195, `coverage must contain 195 records for ${indexId}; found ${count}`);
 }
 for (const [iso3, count] of coverageCountByCountry) {
-  check(count === 16, `coverage must contain 16 records for ${iso3}; found ${count}`);
+  check(count === CANONICAL_INDEX_IDS.length, `coverage must contain 17 records for ${iso3}; found ${count}`);
 }
 
 for (const [leftId, rightId, expected] of KEY_COVERAGE_EDGES) {
@@ -896,6 +898,27 @@ check(
   publishedCount("disaster_displacement") === 0,
   "disaster displacement must have zero published records",
 );
+
+const clifVi = indicesById.get("clif_vi");
+check(clifVi?.referenceYear === "2050 (pessimistic projection)", "CliF-VI must use the 2050 pessimistic projection");
+check(clifVi?.edition === "2025 prototype (2050 pessimistic)", "CliF-VI must retain its prototype edition");
+check(clifVi?.scoreDirection === "higher_worse" && clifVi?.rankable === true && clifVi?.eligibleForCounts === true,
+  "CliF-VI must rank higher scores as worse and participate in summary counts");
+check(statusCount("clif_vi", "ranked_numeric") === 188, "CliF-VI must have 188 ranked records");
+const clifViMissing = new Set(coverage.filter(row => row.indexId === "clif_vi" && row.status === "no_record").map(row => row.iso3));
+check(clifViMissing.size === 7 && ["AND", "CUB", "PRK", "VAT", "LIE", "MCO", "SMR"].every(id => clifViMissing.has(id)),
+  "CliF-VI must preserve the seven countries outside publisher coverage");
+const clifViLeaves = nodes.filter(node => node.indexId === "clif_vi" && node.isLeaf);
+check(clifViLeaves.length === 24, "CliF-VI must have 24 scoped analytical leaves");
+for (const [parent, count] of [["climate", 2], ["debt", 9], ["integration", 8], ["sophistication", 5]]) {
+  check(clifViLeaves.filter(node => node.parentIds.includes(`clif_vi__${parent}`)).length === count,
+    `CliF-VI ${parent} must contain ${count} analytical leaves`);
+}
+check(!clifViLeaves.some(node => /governance|population below 5/i.test(node.officialLabel)),
+  "CliF-VI overall-score hierarchy must exclude supplementary dashboard metrics");
+check(networkDependencyIds.has("rel_inform_risk_clif_vi"), "CliF-VI must document its INFORM Risk dependency");
+check(/2025/.test(relationsById.get("rel_inform_risk_clif_vi")?.editionNote ?? ""),
+  "CliF-VI INFORM Risk dependency must identify the 2025 input edition");
 
 if (issues.length > 0) {
   console.error(`Explorer validation failed with ${issues.length} issue(s):`);

@@ -10,8 +10,9 @@ collate_indices(indices, format = c("wide", "long"))
 \item{indices}{A non-empty character vector of index identifiers. Available
 identifiers are \code{inform_risk}, \code{inform_severity}, \code{underfunded_crisis},
 \code{oecd_fragility}, \code{worldrisk}, \code{nd_gain}, \code{hdi}, \code{mpi}, \code{ghi}, \code{ghs},
-\code{wps}, \code{un_mvi}, \code{debt_distress}, \code{searo}, \code{disaster_displacement}, and
-\code{internal_displacement}. Identifiers must be unique and their supplied
+\code{wps}, \code{un_mvi}, \code{debt_distress}, \code{searo}, \code{disaster_displacement},
+\code{internal_displacement}, and \code{clif_vi} (2050 pessimistic projection).
+Identifiers must be unique and their supplied
 order is preserved.}
 
 \item{format}{Output layout: \code{"wide"} (the default) or \code{"long"}.}

@@ -1,5 +1,14 @@
 # globalvuln 0.2.0
 
+* Added `clif_vi`: the Climate Finance Vulnerability Index 2025 prototype,
+  using the 2050 pessimistic projection for 188 countries. Includes an
+  automated adapter, bundled and approved online data, provenance, and explorer
+  methodology. Higher scores are worse; recalculated ranks contribute to
+  top-10 and top-20 summaries when selected.
+* Fixed combined pipeline validation to retain failures and warnings instead
+  of silently reducing unnamed validation results to a pass.
+* Recheck source downloads on every pipeline run so revisions at stable URLs
+  are detected even when their discovery metadata is unchanged.
 * Added a registry-driven `{targets}` data pipeline with strict validation,
   change analysis, provenance, and atomic publication.
 * Added automated adapters for 15 public sources and a validated manual

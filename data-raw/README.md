@@ -25,7 +25,7 @@ approved-data files changed. It never writes directly to `main`.
 
 ## Approved and working state
 
-- `sources.yml` is the authoritative catalogue for all 16 indices.
+- `sources.yml` is the authoritative catalogue for all 17 indices.
 - `approved/humanitarian_indices.rds` retains canonical historical editions.
 - `approved/source_manifest.csv` records approved source versions and hashes.
 - `../data-published/` is the versioned static pins board deployed under
@@ -40,16 +40,38 @@ error page cannot be accepted as a workbook or PDF.
 
 ## Adapter status
 
-All 16 sources implement the complete contract:
+All 17 sources implement the complete contract:
 
 ```text
 discover -> download -> parse -> standardise -> validate -> compare
 ```
 
-Fifteen sources use scheduled public discovery/downloads. Disaster displacement
+Sixteen sources use scheduled public discovery/downloads. Disaster displacement
 remains `automated: false` because IDMC does not provide a stable downloadable
 country table for GDRM 2.0. Its implemented manual adapter applies the same
 schema, country, range, uniqueness, comparison, and publication gates.
+
+## CliF-VI source
+
+`clif_vi` imports only `2050_pessimistic_final_value` from the public
+`charts.baseData.countryData` JSON assignment in `https://clifvi.org/`. It
+represents the 2025 prototype, 2050 pessimistic projection, using the June 2025
+methodology. No annual publication schedule or exact release date is assumed.
+
+The preparation hook writes a minimal HTML wrapper containing only country
+names, ISO3 codes, and the selected scores, sorted by ISO3. The manifest’s
+checksum and file size refer to this prepared payload; changes to page
+timestamps, map geometry, or other scenarios do not create revisions. The
+parser treats the assignment as JSON and never executes publisher JavaScript.
+Discovery and downloads rerun on each targets invocation; the prepared checksum
+determines whether a fresh download is actually a changed edition.
+Changes to the schema, 188-country coverage, or documented edition require
+review. Do not infer a release year from the website footer or asset versions.
+
+The adapter preserves scores, recalculates vulnerability ranks, and includes
+these ranks in summaries. The seven countries outside publisher coverage
+remain missing. Raw HTML is temporary, and redistribution permission is
+recorded as unknown rather than applying the package code licence to the data.
 
 ## Manual disaster-displacement update
 

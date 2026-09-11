@@ -2,7 +2,7 @@
   "inform_risk", "inform_severity", "underfunded_crisis",
   "oecd_fragility", "worldrisk", "nd_gain", "hdi", "mpi", "ghi", "ghs",
   "wps", "un_mvi", "debt_distress", "searo", "disaster_displacement",
-  "internal_displacement"
+  "internal_displacement", "clif_vi"
 )
 
 load_package_manifest <- function() {

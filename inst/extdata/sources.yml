@@ -1,3 +1,7 @@
+clif_vi:
+  name: "Climate Finance Vulnerability Index (2050 pessimistic)"
+  cadence: "irregular"
+  expected_publication_months: null
 inform_risk:
   name: "INFORM Risk"
   cadence: "annual"

@@ -221,7 +221,7 @@ Update the public documentation and API references:
 Find hard-coded counts and lists before declaring the work complete:
 
 ```sh
-rg -n '16 indices|16 sources|Sixteen|17 rows|index_ids' \
+rg -n '17 indices|17 sources|Seventeen|18 rows|index_ids' \
   README.md R data-raw tests pkgdown
 ```
 

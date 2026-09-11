@@ -18,6 +18,7 @@
 \alias{searo}
 \alias{disaster_displacement}
 \alias{internal_displacement}
+\alias{clif_vi}
 \title{Individual humanitarian index datasets}
 \format{
 Each object is a data frame with 195 rows and 19 variables:
@@ -51,11 +52,12 @@ vulnerable) to 10 (least vulnerable).}
 }
 }
 \source{
-Publisher details and URLs are in \link{humanitarian_index_sources}. Data
-snapshot: 4 August 2026.
+Publisher details, URLs, and source-specific retrieval dates are in
+\link{humanitarian_index_sources}. CliF-VI uses the
+\href{https://clifvi.org/wp-content/uploads/2025/06/Climate-Finance-Vulnerability-Index-Technical-Methodology.pdf}{June 2025 methodology}.
 }
 \description{
-Sixteen consistently structured datasets, one for each published index in
+Seventeen consistently structured datasets, one for each published index in
 the collection. Each uses the same 195-country master geography so datasets
 can be compared or collated by \code{iso3}; rows outside an index's published
 coverage contain missing source and score fields.
@@ -116,6 +118,15 @@ this snapshot because no stable country table was available.
 \item \code{internal_displacement}: IDMC Internal Displacement Index, 2022 values
 published in 2023. Measures policy, capacity, drivers, and impacts; lower
 scores indicate greater vulnerability. Numeric coverage is 44 countries.
+\item \code{clif_vi}: Climate Finance Vulnerability Index (CliF-VI), 2025 prototype,
+2050 pessimistic projection. Combines climate risk with financial
+vulnerability; higher scores indicate greater vulnerability. Scores cover
+188 countries and retain publisher precision on the 0--100 scale. Ranks
+are recalculated with 1 denoting most vulnerable, reversing the publisher's
+ranking direction. Ranks contribute to top-10 and top-20 summaries.
+Climate risk incorporates INFORM Risk 2025 and INFORM Climate Change
+2022 projections; this is not an independent measure of current risk.
+Supplementary governance scores are not part of the overall index.
 }
 }
 \examples{

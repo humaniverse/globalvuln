@@ -27,11 +27,12 @@ validation_result <- function(status = "PASS", messages = character()) {
 combine_validation <- function(...) {
   checks <- list(...)
   levels <- c(PASS = 1L, WARNING = 2L, FAIL = 3L)
-  worst <- names(which.max(vapply(
+  severity <- vapply(
     checks,
     function(check) levels[[check$status]],
     integer(1)
-  )))
+  )
+  worst <- names(levels)[max(c(1L, severity))]
   validation_result(
     status = worst,
     messages = unlist(lapply(checks, `[[`, "messages"), use.names = FALSE)

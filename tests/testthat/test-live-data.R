@@ -50,7 +50,7 @@ test_that("source status uses deterministic cadence rules", {
   )
   severity <- status[status$index_id == "inform_severity", ]
 
-  expect_equal(nrow(status), 16L)
+  expect_equal(nrow(status), 17L)
   expect_identical(severity$status, "expected_soon")
   expect_identical(
     evaluate_source_status(

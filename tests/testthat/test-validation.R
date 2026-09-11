@@ -1,3 +1,20 @@
+test_that("combined validation preserves the worst status and blocks publication", {
+  skip_if_not(pipeline_available, "data-raw pipeline is excluded from the built package")
+  pass <- validation_result("PASS")
+  warning <- validation_result("WARNING", "Coverage changed")
+  fail <- validation_result("FAIL", "Invalid score")
+  expect_identical(combine_validation(pass, warning)$status, "WARNING")
+  expect_identical(combine_validation(warning, pass)$status, "WARNING")
+  combined <- combine_validation(pass, warning, fail)
+  expect_identical(combined$status, "FAIL")
+  expect_setequal(combined$messages, c("Coverage changed", "Invalid score"))
+  expect_identical(combine_validation(fail, pass, warning)$status, "FAIL")
+  expect_identical(combine_validation(source = fail, common = pass)$status, "FAIL")
+  expect_identical(combine_validation()$status, "PASS")
+  result <- list(discovery = list(index_id = "clif_vi"), validation = combined)
+  expect_error(assert_pipeline_valid(list(result)), "clif_vi: Coverage changed; Invalid score")
+})
+
 test_that("canonical validation rejects duplicate keys and missing scores", {
   skip_if_not(pipeline_available, "data-raw pipeline is excluded from the built package")
   history <- read_approved_history(pipeline_path(

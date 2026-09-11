@@ -62,7 +62,9 @@ list(
     source_file,
     download_discovered_source(discovery),
     pattern = map(discovery),
-    format = "file"
+    format = "file",
+    # Stable URLs can publish revised data without changing discovery metadata.
+    cue = tar_cue(mode = "always")
   ),
   tar_target(
     observed_discovery,
