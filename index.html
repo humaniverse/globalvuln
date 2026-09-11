@@ -289,6 +289,7 @@ maintenance:       publishers -&gt; data-raw adapters -&gt; validation -&gt; rev
 <h2 id="how-the-data-is-updated">How the data is updated<a class="anchor" aria-label="anchor" href="#how-the-data-is-updated"></a>
 </h2>
 <p>The update process is conservative: detecting a publisher change creates a candidate, not an immediate production update.</p>
+<p>Maintainers adding an entirely new index should follow <a href="ADDING-DATASETS.html"><code>ADDING-DATASETS.md</code></a>. The steps below describe routine updates to sources that the package already supports.</p>
 <ol style="list-style-type: decimal">
 <li>At 05:23 UTC each day, or on manual dispatch, the <code>update-data.yaml</code> GitHub Actions workflow runs <code><a href="https://docs.ropensci.org/targets/reference/tar_make.html" class="external-link">targets::tar_make()</a></code>.</li>
 <li>

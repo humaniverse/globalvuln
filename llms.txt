@@ -192,6 +192,11 @@ notes.
 The update process is conservative: detecting a publisher change creates
 a candidate, not an immediate production update.
 
+Maintainers adding an entirely new index should follow
+[`ADDING-DATASETS.md`](https://humaniverse.github.io/globalvuln/ADDING-DATASETS.md).
+The steps below describe routine updates to sources that the package
+already supports.
+
 1.  At 05:23 UTC each day, or on manual dispatch, the `update-data.yaml`
     GitHub Actions workflow runs
     [`targets::tar_make()`](https://docs.ropensci.org/targets/reference/tar_make.html).
