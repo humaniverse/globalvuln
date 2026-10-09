@@ -38,6 +38,15 @@ retrieval dates, licensing information, and redistribution policy are retained
 in provenance. The pipeline validates file signatures before parsing so an HTML
 error page cannot be accepted as a workbook or PDF.
 
+If discovery or a download returns HTTP 403 (for example, a publisher's
+Cloudflare challenge), the pipeline retains that source's approved edition
+without changing its data, retrieval date, or provenance. The workflow logs
+and update summary identify the blocked URL and warn that freshness was not
+checked. Other sources can still produce validated candidates, and blocked
+requests are retried on the next run. A source with no approved edition, other
+HTTP errors, invalid file signatures, and parsing or validation failures still
+stop publication.
+
 ## Adapter status
 
 All 17 sources implement the complete contract:

@@ -60,7 +60,7 @@ list(
   ),
   tar_target(
     source_file,
-    download_discovered_source(discovery),
+    download_discovered_source(discovery, approved_manifest = approved_manifest),
     pattern = map(discovery),
     format = "file",
     # Stable URLs can publish revised data without changing discovery metadata.

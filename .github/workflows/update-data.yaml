@@ -48,7 +48,12 @@ jobs:
 
       - name: Write workflow summary
         if: always()
-        run: cat artifacts/update-summary.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          if [[ -f artifacts/update-summary.md ]]; then
+            cat artifacts/update-summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'The data pipeline did not produce an update summary. See the Run data pipeline logs for the failing source; no candidate data were published.' >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Detect approved-data changes
         id: changes

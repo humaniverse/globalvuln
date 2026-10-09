@@ -5,7 +5,12 @@ validate_source_candidate <- function(data, discovery) {
     data,
     discovery
   )
-  combine_validation(common, specific)
+  availability <- if (isTRUE(discovery$unavailable)) {
+    validation_result("WARNING", discovery$unavailable_message)
+  } else {
+    validation_result("PASS")
+  }
+  combine_validation(common, specific, availability)
 }
 
 validate_canonical_data <- function(data, discovery) {

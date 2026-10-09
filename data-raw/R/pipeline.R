@@ -57,6 +57,9 @@ process_manual_source <- function(
 }
 
 parse_source_file <- function(source_file, discovery, approved_manifest) {
+  if (isTRUE(discovery$unavailable)) {
+    return(list(discovery = discovery))
+  }
   adapter <- discovery$registry_entry$adapter[[1L]]
   parse <- get(paste0("parse_", adapter), mode = "function")
   parsed <- parse(source_file, discovery)

@@ -1,4 +1,15 @@
 standardise_source <- function(parsed, discovery, approved_history, overrides) {
+  if (isTRUE(discovery$unavailable)) {
+    retained <- approved_history[
+      approved_history$index_id == discovery$index_id &
+        approved_history$source_version == discovery$source_version,
+      , drop = FALSE
+    ]
+    if (!nrow(retained)) {
+      stop("No approved data to retain for `", discovery$index_id, "`.", call. = FALSE)
+    }
+    return(retained)
+  }
   adapter <- discovery$registry_entry$adapter[[1L]]
   standardise <- get(paste0("standardise_", adapter), mode = "function")
   result <- standardise(

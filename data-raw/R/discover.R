@@ -1,4 +1,10 @@
 pipeline_request <- function(url) {
+  # Publishers sometimes put literal spaces in release links. Preserve valid
+  # escapes while encoding characters that curl cannot accept in a URL.
+  url <- gsub(
+    "%25([[:xdigit:]]{2})", "%\\1",
+    utils::URLencode(url, repeated = TRUE)
+  )
   httr2::request(url) |>
     httr2::req_user_agent(
       "globalvuln-data-pipeline/0.2 (+https://github.com/humaniverse/globalvuln)"
@@ -14,13 +20,50 @@ discover_source <- function(entry, approved_manifest) {
   index_id <- entry$index_id[[1L]]
   adapter <- entry$adapter[[1L]]
   discover <- get(paste0("discover_", adapter), mode = "function")
-  result <- discover(entry, approved_manifest)
+  result <- tryCatch(
+    discover(entry, approved_manifest),
+    httr2_http_403 = function(error) {
+      unavailable_source(
+        new_discovery(entry, approved_manifest, entry$homepage_url[[1L]]),
+        approved_manifest,
+        "discovery",
+        error
+      )
+    },
+    error = function(error) {
+      stop(
+        "Discovery failed for `", index_id, "` at ",
+        entry$homepage_url[[1L]], ": ", conditionMessage(error),
+        call. = FALSE
+      )
+    }
+  )
   required <- c("index_id", "source_version", "url")
   if (!all(required %in% names(result))) {
     stop("Discovery result for `", index_id, "` violates the adapter contract.", call. = FALSE)
   }
   result$registry_entry <- entry
   result
+}
+
+unavailable_source <- function(discovery, approved_manifest, stage, error) {
+  version <- latest_approved_version(discovery$index_id, approved_manifest)
+  message <- paste0(
+    "Source `", discovery$index_id, "` ", stage, " at ", discovery$url,
+    ": ", conditionMessage(error)
+  )
+  if (is.na(version) || !nzchar(version)) {
+    stop(message, " No approved edition is available to retain.", call. = FALSE)
+  }
+  discovery$source_version <- version
+  discovery$unavailable <- TRUE
+  discovery$unavailable_message <- paste0(
+    message, " Retaining approved edition ", version,
+    "; freshness was not checked."
+  )
+  discovery$changed <- FALSE
+  warning(discovery$unavailable_message, call. = FALSE)
+  discovery
 }
 
 latest_approved_version <- function(index_id, approved_manifest) {
@@ -276,6 +319,9 @@ discover_disaster_displacement <- function(registry_entry, approved_manifest) {
 discover_internal_displacement <- discover_fixed_source
 
 finalise_discovery <- function(discovery, source_file, approved_manifest) {
+  if (endsWith(source_file, ".unavailable.rds")) {
+    return(readRDS(source_file))
+  }
   discovery$content_hash <- digest::digest(
     file = source_file,
     algo = "sha256",

@@ -151,14 +151,19 @@ publish_pins_board <- function(history, manifest, board_path, force = FALSE) {
 
 write_update_report <- function(pipeline, path) {
   lines <- c("## Data update summary", "")
+  unavailable <- pipeline$source_results[vapply(
+    pipeline$source_results,
+    function(result) isTRUE(result$discovery$unavailable),
+    logical(1)
+  )]
   if (!pipeline$changed) {
     lines <- c(
       lines,
       "No approved-candidate source changes were detected.",
       "",
-      paste0("- Sources checked: ", length(pipeline$source_results)),
+      paste0("- Sources checked: ", length(pipeline$source_results) - length(unavailable)),
       "- Candidate updates: 0",
-      "- Validation: PASS"
+      if (length(unavailable)) "- Validation: WARNING" else "- Validation: PASS"
     )
   } else {
     lines <- c(lines, "Updated sources:", "")
@@ -204,6 +209,17 @@ write_update_report <- function(pipeline, path) {
       "- 195-country grid: PASS",
       "- Pins board validation: PASS",
       "- Package tests and R CMD check run before PR creation."
+    )
+  }
+  if (length(unavailable)) {
+    lines <- c(
+      lines,
+      "",
+      "### Sources unavailable (approved editions retained)",
+      "",
+      vapply(unavailable, function(result) {
+        paste0("- ", result$discovery$unavailable_message)
+      }, character(1))
     )
   }
   writeLines(lines, path, useBytes = TRUE)
