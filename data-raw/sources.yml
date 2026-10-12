@@ -44,7 +44,7 @@ inform_severity:
   license: "European Commission reuse terms; cite INFORM"
   redistribution_allowed: true
   terms_url: "https://commission.europa.eu/legal-notice_en"
-  adapter_version: "1.0.0"
+  adapter_version: "1.1.0"
 
 underfunded_crisis:
   name: "Underfunded Crisis Index"
@@ -116,7 +116,7 @@ worldrisk:
   license: "CC BY 4.0"
   redistribution_allowed: true
   terms_url: "https://creativecommons.org/licenses/by/4.0/"
-  adapter_version: "1.0.0"
+  adapter_version: "1.1.0"
 
 nd_gain:
   name: "ND-GAIN Country Index"
@@ -308,7 +308,7 @@ debt_distress:
   license: "IMF terms; cite the LIC DSA list"
   redistribution_allowed: false
   terms_url: "https://www.imf.org/external/terms.htm"
-  adapter_version: "1.0.0"
+  adapter_version: "1.0.1"
 
 searo:
   name: "Sexual Exploitation and Abuse Risk Overview"

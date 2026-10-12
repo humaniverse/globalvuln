@@ -47,6 +47,19 @@ requests are retried on the next run. A source with no approved edition, other
 HTTP errors, invalid file signatures, and parsing or validation failures still
 stop publication.
 
+## INFORM Severity country rows
+
+The country worksheet can contain both an individual crisis and a country
+aggregate for the same ISO3. For duplicated countries, the adapter uses the
+publisher's unique `Multiple Crises in [Country]` row only when its crisis ID,
+name, and ISO3 match the `Crisis info` worksheet and its `Geoscope` is `National`.
+This follows section 7.2.3 of the
+[February 2026 methodology](https://drmkc.jrc.ec.europa.eu/inform-index/Portals/0/InfoRM/Severity/Severity%20Methodology%20update-online%2020260202.pdf).
+It preserves the publisher's aggregate score instead of calculating a maximum
+or average. For example, August 2026 includes Papua (`IDN002`, 5.4) alongside
+Indonesia's country aggregate (`IDN007`, 5.3); the country score is 5.3.
+Duplicates without exactly one verified aggregate still stop publication.
+
 ## Adapter status
 
 All 17 sources implement the complete contract:

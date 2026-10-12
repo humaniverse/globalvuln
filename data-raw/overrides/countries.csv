@@ -10,5 +10,6 @@ debt_distress,Lao P.D.R.,LAO,IMF abbreviated country name,2026-08-25
 debt_distress,Micronesia,FSM,IMF short country name,2026-08-25
 debt_distress,Moldova,MDA,IMF short country name,2026-08-25
 debt_distress,Sao Tome and Principe,STP,PDF text extraction removes diacritics,2026-08-25
+debt_distress,S~ao Tom'e and Pr'incipe,STP,macOS iconv transliteration inserts accent markers in PDF text,2026-10-10
 debt_distress,Timor Leste,TLS,IMF country name omits hyphen,2026-08-25
 debt_distress,"Yemen, Republic of",YEM,IMF formal country name,2026-08-25

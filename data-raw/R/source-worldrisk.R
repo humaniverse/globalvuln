@@ -4,7 +4,10 @@ parse_worldrisk <- function(path, discovery) {
     stringsAsFactors = FALSE,
     check.names = FALSE
   )
-  if (ncol(raw) < 3L) {
+  named_columns <- c("WRI.Country EN", "ISO3.Code", "WorldRiskIndex")
+  if (all(named_columns %in% names(raw))) {
+    raw <- raw[named_columns]
+  } else if (ncol(raw) < 3L) {
     stop("WorldRiskIndex workbook has an unrecognised schema.", call. = FALSE)
   }
   data <- data.frame(
@@ -16,6 +19,9 @@ parse_worldrisk <- function(path, discovery) {
     stringsAsFactors = FALSE
   )
   data <- data[grepl("^[A-Z]{3}$", data$iso3) & !is.na(data$score), , drop = FALSE]
+  if (!nrow(data)) {
+    stop("WorldRiskIndex workbook contains no parseable country scores.", call. = FALSE)
+  }
   year <- source_year(
     discovery$url,
     source_version_from_manifest(discovery)

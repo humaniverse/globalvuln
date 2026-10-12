@@ -107,6 +107,37 @@ test_that("WorldRiskIndex workbook uses the first three publisher columns", {
   expect_equal(parsed$data$score, 3.7)
 })
 
+test_that("WorldRiskIndex bilingual workbook selects named score and ISO3 columns", {
+  skip_if_not(pipeline_available)
+  path <- write_fixture_xlsx(
+    data.frame(
+      `WRI.Country EN` = c("Philippines", "Indonesia"),
+      `WIR.Country DE` = c("Philippinen", "Indonesien"),
+      ISO3.Code = c("PHL", "IDN"),
+      WorldRiskIndex = c(46.7, 44.6),
+      Exposure = c(40.8, 39.8),
+      check.names = FALSE
+    ),
+    "Results 2025", col_names = TRUE
+  )
+  parsed <- parse_worldrisk(path, fixture_discovery("worldrisk"))
+  expect_identical(parsed$data$iso3, c("PHL", "IDN"))
+  expect_identical(parsed$data$source_country, c("Philippines", "Indonesia"))
+  expect_equal(parsed$data$score, c(46.7, 44.6))
+})
+
+test_that("WorldRiskIndex rejects an unparseable workbook with a source-specific error", {
+  skip_if_not(pipeline_available)
+  path <- write_fixture_xlsx(
+    data.frame(country = "Indonesia", another_name = "Indonesien", code = "IDN"),
+    "Results", col_names = TRUE
+  )
+  expect_error(
+    parse_worldrisk(path, fixture_discovery("worldrisk")),
+    "WorldRiskIndex workbook contains no parseable country scores"
+  )
+})
+
 test_that("ND-GAIN ZIP selects the latest annual overall score", {
   skip_if_not(pipeline_available, "data-raw pipeline is excluded from the built package")
   testthat::skip_if_not_installed("zip")

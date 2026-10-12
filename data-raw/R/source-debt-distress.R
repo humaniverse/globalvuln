@@ -90,7 +90,8 @@ standardise_debt_distress <- function(
   )
   display_names <- c(
     "Cote d'Ivoire" = "C\u00f4te d'Ivoire",
-    "Sao Tome and Principe" = "S\u00e3o Tom\u00e9 and Pr\u00edncipe"
+    "Sao Tome and Principe" = "S\u00e3o Tom\u00e9 and Pr\u00edncipe",
+    "S~ao Tom'e and Pr'incipe" = "S\u00e3o Tom\u00e9 and Pr\u00edncipe"
   )
   display_match <- match(raw$source_country, names(display_names))
   raw$source_country[!is.na(display_match)] <- unname(

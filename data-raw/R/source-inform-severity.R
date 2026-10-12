@@ -16,9 +16,7 @@ parse_inform_severity <- function(path, discovery) {
   }
   data <- data[grepl("^[A-Z]{3}$", data$ISO3), , drop = FALSE]
   data$score <- suppressWarnings(as.numeric(data[["INFORM Severity Index"]]))
-  if (anyDuplicated(data$ISO3)) {
-    stop("INFORM Severity country worksheet contains duplicate ISO3 codes.", call. = FALSE)
-  }
+  data <- select_inform_severity_country_rows(data, path, sheets)
 
   about <- suppressWarnings(readxl::read_excel(
     path,
@@ -51,6 +49,62 @@ parse_inform_severity <- function(path, discovery) {
     publication_date = release_date,
     methodology_version = "2026-02"
   )
+}
+
+select_inform_severity_country_rows <- function(data, path, sheets) {
+  duplicated_iso3 <- unique(data$ISO3[duplicated(data$ISO3)])
+  if (!length(duplicated_iso3)) {
+    return(data)
+  }
+  fail <- function(iso3, detail) {
+    stop(
+      "INFORM Severity country worksheet contains ambiguous duplicate ISO3 codes (",
+      paste(iso3, collapse = ", "), "): ", detail, ".",
+      call. = FALSE
+    )
+  }
+  if (!all(c("CRISIS", "CRISIS ID") %in% names(data)) ||
+      !"Crisis info" %in% sheets) {
+    fail(duplicated_iso3, "crisis identifiers and Crisis info metadata are required")
+  }
+  metadata <- suppressMessages(readxl::read_excel(
+    path, sheet = "Crisis info", col_types = "text"
+  ))
+  required <- c("Crisis ID", "Crisis", "ISO3 code", "Geoscope")
+  if (!all(required %in% names(metadata))) {
+    fail(duplicated_iso3, "Crisis info has an unrecognised schema")
+  }
+
+  keep <- rep(TRUE, nrow(data))
+  for (iso3 in duplicated_iso3) {
+    rows <- which(data$ISO3 == iso3)
+    ids <- data[["CRISIS ID"]][rows]
+    matches <- lapply(ids, function(id) {
+      which(!is.na(metadata[["Crisis ID"]]) & metadata[["Crisis ID"]] == id)
+    })
+    if (anyNA(ids) || any(!nzchar(trimws(ids))) ||
+        any(lengths(matches) != 1L)) {
+      fail(iso3, "each crisis must match exactly one metadata record")
+    }
+    info <- metadata[unlist(matches), , drop = FALSE]
+    if (anyNA(info[["ISO3 code"]]) || any(info[["ISO3 code"]] != iso3) ||
+        anyNA(info$Crisis) || anyNA(data$CRISIS[rows]) ||
+        any(trimws(info$Crisis) != trimws(data$CRISIS[rows]))) {
+      fail(iso3, "crisis metadata does not match the country worksheet")
+    }
+    # INFORM's February 2026 methodology, section 7.2.3, identifies the
+    # publisher's country aggregate as "Multiple Crises in [Country]".
+    # Use its supplied score, which can be lower than an individual crisis.
+    aggregate <- grepl(
+      "^multiple\\s+cris(?:is|es)\\s+in\\s+\\S",
+      trimws(data$CRISIS[rows]), ignore.case = TRUE, perl = TRUE
+    ) & !is.na(info$Geoscope) & tolower(trimws(info$Geoscope)) == "national"
+    if (sum(aggregate) != 1L) {
+      fail(iso3, "expected exactly one national Multiple Crises country aggregate")
+    }
+    keep[rows[!aggregate]] <- FALSE
+  }
+  data[keep, , drop = FALSE]
 }
 
 standardise_inform_severity <- function(
