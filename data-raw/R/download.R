@@ -36,6 +36,13 @@ download_discovered_source <- function(
       unavailable_source(discovery, approved_manifest, "download", error)
     },
     error = function(error) {
+      # This IMF media link downloads in a browser but returns HTTP 404 to
+      # automated clients. Retain approved data for this known URL only.
+      if (inherits(error, "httr2_http_404") &&
+          identical(discovery$index_id, "debt_distress") &&
+          identical(discovery$url, "https://www.imf.org/-/media/files/publications/ft/dsa/dsalist.pdf")) {
+        return(unavailable_source(discovery, approved_manifest, "download", error))
+      }
       stop(
         "Download failed for `", discovery$index_id, "` at ", discovery$url,
         ": ", conditionMessage(error), call. = FALSE

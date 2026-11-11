@@ -3,8 +3,12 @@ humanitarian_index_sources:
 - humanitarian_index_sources/20260826T125813Z-3cfa5/
 - humanitarian_index_sources/20260911T091113Z-bebe1/
 - humanitarian_index_sources/20261111T171817Z-f87c9/
+- humanitarian_index_sources/20261111T173125Z-739dc/
+- humanitarian_index_sources/20261111T180852Z-d9b2e/
 humanitarian_indices:
 - humanitarian_indices/20260825T162129Z-46af7/
 - humanitarian_indices/20260826T125813Z-ec1c6/
 - humanitarian_indices/20260911T091113Z-d893f/
 - humanitarian_indices/20261111T171817Z-13522/
+- humanitarian_indices/20261111T173125Z-8efb5/
+- humanitarian_indices/20261111T180852Z-997cb/

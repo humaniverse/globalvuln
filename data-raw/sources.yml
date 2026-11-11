@@ -290,7 +290,7 @@ debt_distress:
   name: "Debt-distress classification"
   publisher: "International Monetary Fund and World Bank"
   homepage_url: "https://www.imf.org/external/pubs/ft/dsa/lic.htm"
-  data_url: "https://www.imf.org/external/pubs/ft/dsa/dsalist.pdf"
+  data_url: "https://www.imf.org/-/media/files/publications/ft/dsa/dsalist.pdf"
   methodology_url: "https://www.imf.org/external/pubs/ft/dsa/lic.htm"
   adapter: "debt_distress"
   cadence: "event_driven"
@@ -308,7 +308,7 @@ debt_distress:
   license: "IMF terms; cite the LIC DSA list"
   redistribution_allowed: false
   terms_url: "https://www.imf.org/external/terms.htm"
-  adapter_version: "1.0.1"
+  adapter_version: "1.0.2"
 
 searo:
   name: "Sexual Exploitation and Abuse Risk Overview"

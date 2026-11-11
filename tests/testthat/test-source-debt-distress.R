@@ -18,6 +18,38 @@ test_that("IMF debt-distress text is parsed without inventing a rank", {
   )
 })
 
+test_that("September 2026 IMF layout preserves footnoted countries and missing DSAs", {
+  skip_if_not(pipeline_available)
+  text <- paste(readLines(
+    testthat::test_path("fixtures", "debt-distress-2026-09.txt"), warn = FALSE
+  ), collapse = "\n")
+  for (missing_value in c("...", "\u2026")) {
+    parsed <- parse_debt_distress_text(gsub("...", missing_value, text, fixed = TRUE))
+    expect_identical(parsed$source_version, "2026-09-30")
+    expect_identical(parsed$publication_date, as.Date("2026-09-30"))
+    expect_equal(nrow(parsed$data), 8L)
+    expect_identical(parsed$data$source_country, c(
+      "Cameroon", "Congo, Republic of", "Cote d'Ivoire", "Eritrea", "Ghana",
+      "Sao Tome and Principe", "Senegal", "Zimbabwe"
+    ))
+    expect_equal(parsed$data$score, c(3, 4, 1, NA, 2, 4, 2, 4))
+    eritrea <- parsed$data[parsed$data$source_country == "Eritrea", ]
+    expect_identical(eritrea$score_label, "No current DSA")
+    expect_true(is.na(eritrea$latest_dsa_date))
+    expect_true(is.na(eritrea$latest_dsa_label))
+  }
+})
+
+test_that("IMF country rows cannot be silently dropped when the layout changes", {
+  skip_if_not(pipeline_available)
+  text <- paste0(
+    "As of September 30, 2026\n",
+    "1 Afghanistan 6/28/2021 High\n",
+    "2 Bangladesh 1/30/2026 Unknown\n"
+  )
+  expect_error(parse_debt_distress_text(text), "unparseable country rows")
+})
+
 test_that("IMF country names from macOS transliteration retain canonical names", {
   skip_if_not(pipeline_available)
   history <- read_approved_history(pipeline_path(

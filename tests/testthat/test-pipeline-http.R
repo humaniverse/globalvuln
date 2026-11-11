@@ -168,6 +168,80 @@ test_that("other HTTP errors and invalid successful downloads still fail", {
   })
 })
 
+test_that("the IMF media URL's HTTP 404 retains approved data and provenance", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("debt_distress")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  discovery$source_version <- "2099-01-01"
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(list(httr2::response(status_code = 404)), {
+    expect_warning(
+      path <- download_discovered_source(discovery, directory, inputs$manifest),
+      "Source `debt_distress` download.*HTTP 404.*freshness was not checked"
+    )
+  })
+  expect_true(endsWith(path, ".unavailable.rds"))
+  result <- retained_http_result(discovery, path, inputs)
+  expected <- inputs$history[
+    inputs$history$index_id == "debt_distress" &
+      inputs$history$source_version == result$discovery$source_version,
+    , drop = FALSE
+  ]
+  expect_identical(result$data, expected)
+  expect_identical(result$discovery$source_version, latest_approved_version(
+    "debt_distress", inputs$manifest
+  ))
+  expect_false(result$changed)
+  expect_null(result$discovery$content_hash)
+  expect_identical(result$validation$status, "WARNING")
+  pipeline <- assemble_pipeline(list(result), inputs$history, inputs$manifest)
+  expect_false(pipeline$changed)
+  expect_identical(pipeline$manifest, inputs$manifest)
+  expected_history <- inputs$history
+  attr(expected_history, "source_manifest") <- inputs$manifest
+  expect_identical(pipeline$history, expected_history)
+
+  report <- file.path(directory, "summary.md")
+  write_update_report(pipeline, report)
+  text <- paste(readLines(report), collapse = "\n")
+  expect_match(text, "Validation: WARNING")
+  expect_match(text, discovery$url, fixed = TRUE)
+  expect_match(text, "HTTP 404.*Retaining approved edition.*freshness was not checked")
+})
+
+test_that("an IMF HTTP 404 cannot hide a source with no approved edition", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("debt_distress")
+  manifest <- inputs$manifest[inputs$manifest$index_id != "debt_distress", ]
+  discovery <- discover_source(inputs$entry, manifest)
+  httr2::with_mocked_responses(list(httr2::response(status_code = 404)), {
+    expect_error(
+      download_discovered_source(discovery, withr::local_tempdir(), manifest),
+      "No approved edition is available to retain"
+    )
+  })
+})
+
+test_that("HTTP 404 from other sources or unrecognized IMF URLs still fails", {
+  skip_if_not(pipeline_available)
+  for (index_id in c("ghs", "un_mvi", "debt_distress")) {
+    inputs <- http_pipeline_inputs(index_id)
+    url <- if (index_id == "debt_distress") {
+      "https://www.imf.org/unrecognized.pdf"
+    } else {
+      inputs$entry$data_url[[1L]]
+    }
+    discovery <- new_discovery(inputs$entry, inputs$manifest, url)
+    discovery$registry_entry <- inputs$entry
+    httr2::with_mocked_responses(list(httr2::response(status_code = 404)), {
+      expect_error(
+        download_discovered_source(discovery, withr::local_tempdir(), inputs$manifest),
+        paste0("Download failed for `", index_id, "`.*HTTP 404")
+      )
+    })
+  }
+})
+
 test_that("IMF HTTP 200 error redirects retain approved data and provenance", {
   skip_if_not(pipeline_available)
   inputs <- http_pipeline_inputs("debt_distress")

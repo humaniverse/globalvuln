@@ -43,12 +43,28 @@ Cloudflare challenge), the pipeline retains that source's approved edition
 without changing its data, retrieval date, or provenance. The workflow logs
 and update summary identify the blocked URL and warn that freshness was not
 checked. Other sources can still produce validated candidates, and blocked
-requests are retried on the next run. The same retention applies to the IMF's
+requests are retried on the next run. The same retention applies when the IMF
+debt-distress media URL returns HTTP 404 to automated clients, and to the IMF's
 known HTML error redirect: it returns HTTP 200 but includes an explicit `404;`
-marker in its `https://www.imf.org/redirect/` URL. That response is recorded as
+marker in its `https://www.imf.org/redirect/` URL. These responses are recorded as
 unavailable, never parsed as a PDF or promoted as a new edition. A source with
-no approved edition, other HTTP errors, unrecognized invalid file signatures,
-and parsing or validation failures still stop publication.
+no approved edition, HTTP 404 from other sources or unrecognized IMF URLs,
+other HTTP errors, unrecognized invalid file signatures, and parsing or
+validation failures still stop publication.
+
+## IMF debt-distress list
+
+`debt_distress` downloads the [IMF/WBG LIC DSA list](https://www.imf.org/-/media/files/publications/ft/dsa/dsalist.pdf)
+from the IMF's current media URL. The PDF's `As of` date identifies the edition;
+each country's latest DSA publication date remains its reference year. Country
+footnote markers are removed before matching names, and Eritrea's unpublished
+DSA remains missing even when its row contains ellipses. Every numbered country
+row must parse before publication. Classifications are never ranked.
+
+The 30 September 2026 edition's country rows contain 10 countries in debt
+distress, 22 at high risk, 27 at moderate risk, and 8 at low risk, plus Eritrea
+without a published DSA. Its summary footnote instead reports 26 moderate-risk
+and 9 low-risk countries. The dataset preserves the individual country rows.
 
 ## INFORM Severity country rows
 
