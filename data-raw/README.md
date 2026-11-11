@@ -50,6 +50,20 @@ unavailable, never parsed as a PDF or promoted as a new edition. A source with
 no approved edition, other HTTP errors, unrecognized invalid file signatures,
 and parsing or validation failures still stop publication.
 
+## IMF debt-distress list
+
+`debt_distress` downloads the [IMF/WBG LIC DSA list](https://www.imf.org/-/media/files/publications/ft/dsa/dsalist.pdf)
+from the IMF's current media URL. The PDF's `As of` date identifies the edition;
+each country's latest DSA publication date remains its reference year. Country
+footnote markers are removed before matching names, and Eritrea's unpublished
+DSA remains missing even when its row contains ellipses. Every numbered country
+row must parse before publication. Classifications are never ranked.
+
+The 30 September 2026 edition's country rows contain 10 countries in debt
+distress, 22 at high risk, 27 at moderate risk, and 8 at low risk, plus Eritrea
+without a published DSA. Its summary footnote instead reports 26 moderate-risk
+and 9 low-risk countries. The dataset preserves the individual country rows.
+
 ## INFORM Severity country rows
 
 The country worksheet can contain both an individual crisis and a country

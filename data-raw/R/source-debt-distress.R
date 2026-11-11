@@ -40,10 +40,12 @@ parse_debt_distress_text <- function(text) {
     score_label = rows[, 4L],
     stringsAsFactors = FALSE
   )
-  data$source_country <- sub("\\s+[456]/\\s*$", "", data$source_country)
+  data$source_country <- sub("\\s+[0-9]+/\\s*$", "", data$source_country)
 
   numbered_lines <- grep("^\\s*[0-9]{1,2}\\s+", lines, value = TRUE)
-  if (!18L %in% data$count && any(grepl("^\\s*18\\s+Eritrea\\s*$", numbered_lines))) {
+  if (!18L %in% data$count && any(grepl(
+    "^\\s*18\\s+Eritrea(?:\\s+\\.{3})*\\s*$", numbered_lines, perl = TRUE
+  ))) {
     data <- rbind(
       data,
       data.frame(
@@ -59,6 +61,10 @@ parse_debt_distress_text <- function(text) {
   data <- data[order(data$count), , drop = FALSE]
   if (anyDuplicated(data$count) || anyDuplicated(data$source_country)) {
     stop("The IMF LIC DSA PDF contains duplicate country rows.", call. = FALSE)
+  }
+  numbered_counts <- as.integer(sub("^\\s*([0-9]{1,2})\\s+.*$", "\\1", numbered_lines))
+  if (length(numbered_counts) != nrow(data) || !setequal(numbered_counts, data$count)) {
+    stop("The IMF LIC DSA PDF contains unparseable country rows.", call. = FALSE)
   }
   score_map <- c(
     "Low" = 1,
