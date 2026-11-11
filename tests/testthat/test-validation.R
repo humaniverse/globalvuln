@@ -20,12 +20,18 @@ test_that("canonical validation rejects duplicate keys and missing scores", {
   history <- read_approved_history(pipeline_path(
     "data-raw", "approved", "humanitarian_indices.rds"
   ))
+  manifest <- read_approved_manifest(pipeline_path(
+    "data-raw", "approved", "source_manifest.csv"
+  ))
   registry <- read_source_registry(pipeline_path("data-raw", "sources.yml"))
   discovery <- list(
     registry_entry = registry_entry(registry, "inform_severity")
   )
-  candidate <- history[history$index_id == "inform_severity", , drop = FALSE]
+  current <- current_history_views(history, manifest)
+  candidate <- current[current$index_id == "inform_severity", , drop = FALSE]
 
+  expect_equal(nrow(candidate), 195L)
+  expect_length(unique(candidate$source_version), 1L)
   expect_identical(validate_canonical_data(candidate, discovery)$status, "PASS")
 
   duplicated <- candidate
@@ -45,11 +51,25 @@ test_that("change analysis surfaces large coverage shifts as warnings", {
   manifest <- read_approved_manifest(pipeline_path(
     "data-raw", "approved", "source_manifest.csv"
   ))
-  candidate <- history[history$index_id == "inform_severity", , drop = FALSE]
+  current <- current_history_views(history, manifest)
+  candidate <- current[current$index_id == "inform_severity", , drop = FALSE]
   covered <- which(!is.na(candidate$source_country))
-  candidate$source_country[covered[1:20]] <- NA_character_
-  candidate$score[covered[1:20]] <- NA_real_
+  # Losing half the coverage is a large shift regardless of publisher coverage.
+  n_removed <- ceiling(length(covered) / 2)
+  expect_gt(n_removed, 10L)
+  removed <- covered[seq_len(n_removed)]
+  candidate$source_country[removed] <- NA_character_
+  candidate$score[removed] <- NA_real_
 
   comparison <- compare_source_candidate(candidate, history, manifest)
+  expect_identical(
+    comparison$metrics$previous_version,
+    unique(candidate$source_version)
+  )
+  expect_equal(comparison$metrics$source_countries_before, length(covered))
+  expect_equal(
+    comparison$metrics$source_countries_after,
+    length(covered) - n_removed
+  )
   expect_identical(comparison$validation$status, "WARNING")
 })

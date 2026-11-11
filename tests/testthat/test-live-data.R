@@ -44,13 +44,25 @@ test_that("latest mode reads the approved board and never silently falls back", 
 })
 
 test_that("source status uses deterministic cadence rules", {
+  manifest <- data.frame(
+    index_id = rep("inform_severity", 2L),
+    source_version = c("2026-06", "2026-07"),
+    publication_date = as.Date(c("2026-06-30", "2026-07-31")),
+    retrieval_date = as.Date(c("2026-08-04", "2026-08-25"))
+  )
+  local_mocked_bindings(
+    load_approved_source_manifest = function() manifest,
+    .package = "globalvuln"
+  )
   status <- source_status(
     source = "package",
-    as_of = as.Date("2026-08-25")
+    as_of = as.Date("2026-09-25")
   )
   severity <- status[status$index_id == "inform_severity", ]
 
   expect_equal(nrow(status), 17L)
+  expect_identical(severity$source_version, "2026-07")
+  expect_identical(severity$publication_date, as.Date("2026-07-31"))
   expect_identical(severity$status, "expected_soon")
   expect_identical(
     evaluate_source_status(
