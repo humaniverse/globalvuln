@@ -1,0 +1,10 @@
+file: humanitarian_indices.rds
+file_size: 47299
+pin_hash: 135228d8f8669a0d
+type: rds
+title: 'humanitarian_indices: a pinned 4485 x 25 data frame'
+description: Approved historical globalvuln index data
+tags: ~
+urls: ~
+created: 20261111T171817Z
+api_version: 1
