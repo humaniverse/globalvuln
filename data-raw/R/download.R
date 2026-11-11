@@ -17,7 +17,21 @@ download_discovered_source <- function(
     request <- httr2::req_headers(request, Referer = homepage)
   }
   response <- tryCatch(
-    httr2::req_perform(request, path = destination),
+    {
+      response <- httr2::req_perform(request, path = destination)
+      if (is_imf_error_redirect(response)) {
+        unavailable_source(
+          discovery, approved_manifest, "download",
+          simpleError(paste0(
+            "Publisher returned an HTML error page with HTTP 200 via a 404 redirect at ",
+            httr2::resp_url(response), "."
+          ))
+        )
+      } else {
+        validate_download_signature(destination, extension)
+        response
+      }
+    },
     httr2_http_403 = function(error) {
       unavailable_source(discovery, approved_manifest, "download", error)
     },
@@ -32,7 +46,6 @@ download_discovered_source <- function(
     return(write_unavailable_source(response, download_dir))
   }
   discovery_headers <- httr2::resp_headers(response)
-  validate_download_signature(destination, extension)
   prepare_name <- paste0(
     "prepare_source_file_",
     discovery$registry_entry$adapter[[1L]]
@@ -48,6 +61,17 @@ download_discovered_source <- function(
   attr(destination, "etag") <- discovery_headers[["etag"]] %||% NA_character_
   attr(destination, "last_modified") <- discovery_headers[["last-modified"]] %||% NA_character_
   destination
+}
+
+is_imf_error_redirect <- function(response) {
+  # IMF's missing legacy downloads redirect to an empty HTML page with HTTP
+  # 200. Require its explicit 404 redirect marker, not just an invalid file.
+  url <- httr2::resp_url(response)
+  content_type <- httr2::resp_header(response, "content-type") %||% ""
+  httr2::resp_status(response) == 200L &&
+    startsWith(url, "https://www.imf.org/redirect/") &&
+    grepl("[?&]404;", url) &&
+    startsWith(tolower(content_type), "text/html")
 }
 
 write_unavailable_source <- function(discovery, download_dir) {

@@ -24,6 +24,22 @@ retained_http_result <- function(discovery, path, inputs) {
   )
 }
 
+mock_imf_error_redirect <- function(directory) {
+  function(req) {
+    body <- charToRaw("<!DOCTYPE html><html><body></body></html>")
+    writeBin(body, file.path(directory, "debt_distress.pdf"))
+    httr2::response(
+      status_code = 200,
+      url = paste0(
+        "https://www.imf.org/redirect/?URL=$V&404;",
+        "https://www.imf.org:443/external/pubs/ft/dsa/dsalist.pdf"
+      ),
+      headers = list("content-type" = "text/html; charset=utf-8"),
+      body = body
+    )
+  }
+}
+
 test_that("publisher URLs encode spaces without double-encoding existing escapes", {
   skip_if_not(pipeline_available)
   url <- "https://example.org/202608 INFORM%20Severity.xlsx?name=a%26b&year=2026"
@@ -150,6 +166,112 @@ test_that("other HTTP errors and invalid successful downloads still fail", {
       "does not match expected type `csv`"
     )
   })
+})
+
+test_that("IMF HTTP 200 error redirects retain approved data and provenance", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("debt_distress")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  discovery$source_version <- "2099-01-01"
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(mock_imf_error_redirect(directory), {
+    expect_warning(
+      path <- download_discovered_source(discovery, directory, inputs$manifest),
+      "Source `debt_distress` download.*HTML error page.*HTTP 200.*freshness was not checked"
+    )
+  })
+  expect_true(endsWith(path, ".unavailable.rds"))
+  result <- retained_http_result(discovery, path, inputs)
+  expected <- inputs$history[
+    inputs$history$index_id == "debt_distress" &
+      inputs$history$source_version == result$discovery$source_version,
+    , drop = FALSE
+  ]
+  expect_identical(result$data, expected)
+  expect_false(result$changed)
+  expect_null(result$discovery$content_hash)
+  expect_identical(result$validation$status, "WARNING")
+  pipeline <- assemble_pipeline(list(result), inputs$history, inputs$manifest)
+  expect_false(pipeline$changed)
+  expect_identical(pipeline$manifest, inputs$manifest)
+
+  # A previous unavailable marker must not prevent the next run downloading.
+  pdf <- charToRaw("%PDF-1.7\nMock IMF debt-distress download\n")
+  httr2::with_mocked_responses(function(req) {
+    writeBin(pdf, file.path(directory, "debt_distress.pdf"))
+    httr2::response(body = pdf)
+  }, {
+    path <- download_discovered_source(discovery, directory, inputs$manifest)
+  })
+  expect_identical(readBin(path, "raw", n = length(pdf)), pdf)
+  observed <- finalise_discovery(discovery, path, inputs$manifest)
+  expect_false(isTRUE(observed$unavailable))
+  expect_true(observed$changed)
+})
+
+test_that("an IMF error redirect cannot hide a source with no approved edition", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("debt_distress")
+  manifest <- inputs$manifest[inputs$manifest$index_id != "debt_distress", ]
+  discovery <- discover_source(inputs$entry, manifest)
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(mock_imf_error_redirect(directory), {
+    expect_error(
+      download_discovered_source(discovery, directory, manifest),
+      "No approved edition is available to retain"
+    )
+  })
+})
+
+test_that("unrecognized redirects still fail PDF validation", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("debt_distress")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  directory <- withr::local_tempdir()
+  mock <- mock_imf_error_redirect(directory)
+  for (url in c(
+    "https://example.org/redirect/?URL=$V&404;",
+    "https://www.imf.org/redirect/?URL=$V&other;"
+  )) {
+    httr2::with_mocked_responses(function(req) {
+      response <- mock(req)
+      response$url <- url
+      response
+    }, {
+      expect_error(
+        download_discovered_source(discovery, directory, inputs$manifest),
+        "Download failed for `debt_distress`.*does not match expected type `pdf`"
+      )
+    })
+  }
+})
+
+test_that("invalid PDF downloads identify the source and URL", {
+  skip_if_not(pipeline_available)
+  for (index_id in c("debt_distress", "un_mvi")) {
+    inputs <- http_pipeline_inputs(index_id)
+    discovery <- discover_source(inputs$entry, inputs$manifest)
+    directory <- withr::local_tempdir()
+    httr2::with_mocked_responses(function(req) {
+      writeLines(
+        "<!DOCTYPE html><html><body>Error page</body></html>",
+        file.path(directory, paste0(index_id, ".pdf"))
+      )
+      httr2::response(status_code = 200)
+    }, {
+      error <- tryCatch(
+        download_discovered_source(discovery, directory, inputs$manifest),
+        error = identity
+      )
+    })
+    expect_s3_class(error, "error")
+    expect_match(
+      conditionMessage(error),
+      paste0("Download failed for `", index_id, "` at ", discovery$url),
+      fixed = TRUE
+    )
+    expect_match(conditionMessage(error), "does not match expected type `pdf`")
+  }
 })
 
 test_that("an unavailable source does not prevent another validated source update", {

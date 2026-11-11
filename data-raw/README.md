@@ -43,9 +43,12 @@ Cloudflare challenge), the pipeline retains that source's approved edition
 without changing its data, retrieval date, or provenance. The workflow logs
 and update summary identify the blocked URL and warn that freshness was not
 checked. Other sources can still produce validated candidates, and blocked
-requests are retried on the next run. A source with no approved edition, other
-HTTP errors, invalid file signatures, and parsing or validation failures still
-stop publication.
+requests are retried on the next run. The same retention applies to the IMF's
+known HTML error redirect: it returns HTTP 200 but includes an explicit `404;`
+marker in its `https://www.imf.org/redirect/` URL. That response is recorded as
+unavailable, never parsed as a PDF or promoted as a new edition. A source with
+no approved edition, other HTTP errors, unrecognized invalid file signatures,
+and parsing or validation failures still stop publication.
 
 ## INFORM Severity country rows
 
