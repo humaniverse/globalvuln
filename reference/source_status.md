@@ -55,14 +55,14 @@ source_status(source = "package", as_of = as.Date("2026-08-25"))
 #>                       source_version publication_date retrieval_date
 #> 1  2025 prototype (2050 pessimistic)             <NA>     2026-09-11
 #> 2                        2026 v0.7.2       2026-03-31     2026-08-04
-#> 3                            2026-06       2026-06-30     2026-08-04
+#> 3                            2026-09       2026-09-30     2026-11-11
 #> 4                               2025             <NA>     2026-08-04
 #> 5           States of Fragility 2025             <NA>     2026-08-04
-#> 6                               2025             <NA>     2026-08-04
+#> 6                      2025+b8261428             <NA>     2026-11-11
 #> 7              2026 release+e854c7fe             <NA>     2026-08-25
 #> 8      Human Development Report 2025             <NA>     2026-08-04
 #> 9                    Global MPI 2025             <NA>     2026-08-04
-#> 10                     2025+6d7af17a             <NA>     2026-08-26
+#> 10                     2025+0b21e724             <NA>     2026-11-11
 #> 11                              2021             <NA>     2026-08-04
 #> 12                           2025/26             <NA>     2026-08-04
 #> 13          High-Level Panel results             <NA>     2026-08-04
@@ -73,7 +73,7 @@ source_status(source = "package", as_of = as.Date("2026-08-25"))
 #>         cadence expected_publication_window             status
 #> 1     irregular                        <NA> irregular_schedule
 #> 2        annual                      8,9,10      expected_soon
-#> 3       monthly                        <NA>      expected_soon
+#> 3       monthly                        <NA>            current
 #> 4        annual                    10,11,12   latest_published
 #> 5      biennial                        <NA>   latest_published
 #> 6        annual                        9,10      expected_soon
@@ -91,7 +91,7 @@ source_status(source = "package", as_of = as.Date("2026-08-25"))
 #>                                               status_reason
 #> 1              The publisher has no fixed release schedule.
 #> 2  The source is in its expected annual publication window.
-#> 3                The next monthly release is expected soon.
+#> 3       Approved data are within the monthly update window.
 #> 4            This is the latest approved publisher edition.
 #> 5           This is the latest approved multi-year edition.
 #> 6  The source is in its expected annual publication window.
