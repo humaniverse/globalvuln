@@ -174,7 +174,7 @@
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">node</span> data-raw/validate-indices-explorer.mjs</span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">testthat</span><span class="fu">::</span><span class="fu"><a href="https://testthat.r-lib.org/reference/test_package.html" class="external-link">test_local</a></span><span class="op">(</span>stop_on_failure <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span>, error_on <span class="op">=</span> <span class="st">"warning"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu">rcmdcheck</span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span>, error_on <span class="op">=</span> <span class="st">"warning"</span><span class="op">)</span></span></code></pre></div>
 <p>Commit the generated package snapshot, approved history and manifest, installed manifest, and versioned board along with the code and documentation. Do not commit <code>_targets/</code>, downloaded source files, or <code>artifacts/</code>.</p>
 </div>
 <div class="section level2">
