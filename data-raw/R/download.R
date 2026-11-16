@@ -19,7 +19,15 @@ download_discovered_source <- function(
   response <- tryCatch(
     {
       response <- httr2::req_perform(request, path = destination)
-      if (is_imf_error_redirect(response)) {
+      if (is_aws_waf_challenge(response)) {
+        unavailable_source(
+          discovery, approved_manifest, "download",
+          simpleError(paste0(
+            "Publisher returned an AWS WAF browser challenge ",
+            "(HTTP 202; x-amzn-waf-action: challenge)."
+          ))
+        )
+      } else if (is_imf_error_redirect(response)) {
         unavailable_source(
           discovery, approved_manifest, "download",
           simpleError(paste0(
@@ -28,7 +36,18 @@ download_discovered_source <- function(
           ))
         )
       } else {
-        validate_download_signature(destination, extension)
+        tryCatch(
+          validate_download_signature(destination, extension),
+          error = function(error) {
+            stop(
+              conditionMessage(error),
+              " HTTP status: ", httr2::resp_status(response),
+              "; content type: ",
+              httr2::resp_header(response, "content-type") %||% "unknown",
+              ".", call. = FALSE
+            )
+          }
+        )
         response
       }
     },
@@ -68,6 +87,13 @@ download_discovered_source <- function(
   attr(destination, "etag") <- discovery_headers[["etag"]] %||% NA_character_
   attr(destination, "last_modified") <- discovery_headers[["last-modified"]] %||% NA_character_
   destination
+}
+
+is_aws_waf_challenge <- function(response) {
+  # WAF uses a successful HTTP status even though it has blocked the file.
+  # Require the explicit challenge header; an unexplained empty file fails.
+  httr2::resp_status(response) == 202L &&
+    identical(httr2::resp_header(response, "x-amzn-waf-action"), "challenge")
 }
 
 is_imf_error_redirect <- function(response) {

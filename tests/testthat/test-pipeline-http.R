@@ -40,6 +40,126 @@ mock_imf_error_redirect <- function(directory) {
   }
 }
 
+mock_aws_waf_challenge <- function(directory, index_id = "searo", body = raw()) {
+  function(req) {
+    writeBin(body, file.path(directory, paste0(index_id, ".xlsx")))
+    httr2::response(
+      status_code = 202,
+      headers = list(
+        "x-amzn-waf-action" = "challenge",
+        "content-type" = "text/html; charset=UTF-8"
+      ),
+      body = body
+    )
+  }
+}
+
+test_that("AWS WAF HTTP 202 downloads retain approved data and provenance", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("searo")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  discovery$source_version <- "2099"
+  directory <- withr::local_tempdir()
+  for (body in list(raw(), charToRaw("<html>Browser challenge</html>"))) {
+    httr2::with_mocked_responses(mock_aws_waf_challenge(directory, body = body), {
+      expect_warning(
+        path <- download_discovered_source(discovery, directory, inputs$manifest),
+        "Source `searo` download.*AWS WAF.*HTTP 202.*freshness was not checked"
+      )
+    })
+    expect_true(endsWith(path, ".unavailable.rds"))
+    result <- retained_http_result(discovery, path, inputs)
+    expected <- inputs$history[
+      inputs$history$index_id == "searo" &
+        inputs$history$source_version == result$discovery$source_version,
+      , drop = FALSE
+    ]
+    expect_identical(result$data, expected)
+    expect_false(result$changed)
+    expect_null(result$discovery$content_hash)
+    expect_identical(result$validation$status, "WARNING")
+    pipeline <- assemble_pipeline(list(result), inputs$history, inputs$manifest)
+    expect_false(pipeline$changed)
+    expect_identical(pipeline$manifest, inputs$manifest)
+    report <- file.path(directory, "summary.md")
+    write_update_report(pipeline, report)
+    text <- paste(readLines(report), collapse = "\n")
+    expect_match(text, "Sources checked: 0")
+    expect_match(text, "AWS WAF.*freshness was not checked")
+    expect_match(text, discovery$url, fixed = TRUE)
+  }
+
+  # The unavailable marker must not prevent recovery on the next invocation.
+  workbook <- charToRaw("PK\003\004Mock workbook signature")
+  httr2::with_mocked_responses(function(req) {
+    writeBin(workbook, file.path(directory, "searo.xlsx"))
+    httr2::response(body = workbook)
+  }, {
+    path <- download_discovered_source(discovery, directory, inputs$manifest)
+  })
+  expect_true(endsWith(path, ".xlsx"))
+  observed <- finalise_discovery(discovery, path, inputs$manifest)
+  expect_false(isTRUE(observed$unavailable))
+  expect_true(observed$changed)
+})
+
+test_that("a WAF challenge cannot hide a source without an approved edition", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("searo")
+  manifest <- inputs$manifest[inputs$manifest$index_id != "searo", ]
+  discovery <- discover_source(inputs$entry, manifest)
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(mock_aws_waf_challenge(directory), {
+    expect_error(
+      download_discovered_source(discovery, directory, manifest),
+      "No approved edition is available to retain"
+    )
+  })
+})
+
+test_that("blocked OECD requests can retain the approved 2025 edition", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("oecd_fragility")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(list(httr2::response(status_code = 403)), {
+    expect_warning(
+      path <- download_discovered_source(discovery, directory, inputs$manifest),
+      "Retaining approved edition States of Fragility 2025"
+    )
+  })
+  result <- retained_http_result(discovery, path, inputs)
+  expect_identical(result$validation$status, "WARNING")
+  expect_identical(unique(result$data$edition), "States of Fragility 2025")
+  expect_equal(sum(!is.na(result$data$score)), 61L)
+  pipeline <- assemble_pipeline(list(result), inputs$history, inputs$manifest)
+  expect_false(pipeline$changed)
+  expect_identical(pipeline$manifest, inputs$manifest)
+})
+
+test_that("unexplained empty downloads still fail and report response details", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("searo")
+  discovery <- discover_source(inputs$entry, inputs$manifest)
+  directory <- withr::local_tempdir()
+  for (response in list(
+    httr2::response(status_code = 200),
+    httr2::response(status_code = 202),
+    httr2::response(status_code = 202, headers = list("x-amzn-waf-action" = "other")),
+    httr2::response(status_code = 200, headers = list("x-amzn-waf-action" = "challenge"))
+  )) {
+    httr2::with_mocked_responses(function(req) {
+      writeBin(raw(), file.path(directory, "searo.xlsx"))
+      response
+    }, {
+      expect_error(
+        download_discovered_source(discovery, directory, inputs$manifest),
+        paste0("Downloaded source file is empty.*HTTP status: ", response$status_code)
+      )
+    })
+  }
+})
+
 test_that("publisher URLs encode spaces without double-encoding existing escapes", {
   skip_if_not(pipeline_available)
   url <- "https://example.org/202608 INFORM%20Severity.xlsx?name=a%26b&year=2026"

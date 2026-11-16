@@ -14,7 +14,13 @@ parse_oecd_fragility <- function(path, discovery) {
   if (is.na(year)) {
     stop("Unable to derive the OECD fragility edition year.", call. = FALSE)
   }
-  reference_period <- paste("predominantly", year - 2L)
+  # The 2026 update combines indicator years; its release year alone does not
+  # establish a common reference year for the underlying data.
+  reference_period <- if (year == 2026L) {
+    "mixed reference years (2026 update)"
+  } else {
+    paste("predominantly", year - 2L)
+  }
   data <- data.frame(
     source_country = raw$country,
     iso3 = raw$iso3,
@@ -30,7 +36,11 @@ parse_oecd_fragility <- function(path, discovery) {
     source_version = edition,
     edition = edition,
     reference_period = reference_period,
-    publication_date = discovery$publication_date,
+    publication_date = if (year == 2026L) {
+      as.Date("2026-11-16")
+    } else {
+      discovery$publication_date
+    },
     methodology_version = as.character(year)
   )
 }
@@ -42,5 +52,11 @@ standardise_oecd_fragility <- function(parsed, discovery, geography, overrides) 
 }
 
 validate_oecd_fragility <- function(data, discovery) {
+  # Approved 2025 data can still be retained when a request is blocked after
+  # the registry moves to 2026. Keep both editions' coverage gates exact.
+  if (identical(unique(data$edition), "States of Fragility 2025")) {
+    discovery$registry_entry$expected_min_countries <- 61L
+    discovery$registry_entry$expected_max_countries <- 61L
+  }
   validate_numeric_adapter(data, discovery, "OECD fragility")
 }

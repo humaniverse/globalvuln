@@ -75,7 +75,7 @@ oecd_fragility:
   publisher: "Organisation for Economic Co-operation and Development"
   homepage_url: "https://www.oecd.org/en/data/dashboards/multidimensional-fragility.html"
   data_url: "https://gitvfd.github.io/states-of-fragility-snail/data-new.tsv"
-  methodology_url: "https://www.oecd.org/en/publications/states-of-fragility-2025_81982370-en.html"
+  methodology_url: "https://www.oecd.org/en/publications/states-of-fragility-2026-update_866ee7f4-en.html"
   adapter: "oecd_fragility"
   cadence: "biennial"
   expected_publication_months: null
@@ -85,14 +85,14 @@ oecd_fragility:
   vulnerability_direction: "lower_is_worse"
   score_min: -10
   score_max: 10
-  expected_min_countries: 61
-  expected_max_countries: 61
+  expected_min_countries: 62
+  expected_max_countries: 62
   eligible_for_counts: true
   expected_file_type: "tsv"
   license: "OECD terms; cite States of Fragility"
   redistribution_allowed: null
   terms_url: "https://www.oecd.org/en/about/terms-conditions.html"
-  adapter_version: "1.0.0"
+  adapter_version: "1.1.0"
 
 worldrisk:
   name: "WorldRiskIndex"

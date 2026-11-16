@@ -90,9 +90,52 @@ test_that("OECD fragility TSV preserves decimal-comma scores", {
     "Afghanistan\tAFG\t-4,395216",
     "Angola\tAGO\t-2,535993"
   ), path)
-  parsed <- parse_oecd_fragility(path, fixture_discovery("oecd_fragility"))
+  discovery <- fixture_discovery("oecd_fragility")
+  discovery$registry_entry$methodology_url <-
+    "https://www.oecd.org/en/publications/states-of-fragility-2025_81982370-en.html"
+  parsed <- parse_oecd_fragility(path, discovery)
   expect_equal(parsed$data$score, c(-4.395216, -2.535993))
+  expect_identical(parsed$source_version, "States of Fragility 2025")
   expect_identical(parsed$reference_period, "predominantly 2023")
+})
+
+test_that("OECD's 2026 decimal-point release gets its own edition metadata", {
+  skip_if_not(pipeline_available)
+  path <- tempfile(fileext = ".tsv")
+  writeLines(c(
+    "country\tiso3\toverall",
+    "Chad\tTCD\t-4.66091037811132",
+    "Papua New Guinea\tPNG\t-2.80011932992768",
+    "Honduras\tHND\t-1.19059250542223"
+  ), path)
+  parsed <- parse_oecd_fragility(path, fixture_discovery("oecd_fragility"))
+  expect_identical(parsed$data$iso3, c("TCD", "PNG", "HND"))
+  expect_equal(parsed$data$score, c(-4.66091037811132, -2.80011932992768, -1.19059250542223))
+  expect_identical(parsed$source_version, "States of Fragility 2026")
+  expect_identical(parsed$methodology_version, "2026")
+  expect_identical(parsed$reference_period, "mixed reference years (2026 update)")
+  expect_identical(parsed$publication_date, as.Date("2026-11-16"))
+})
+
+test_that("OECD coverage gates distinguish the 2025 and 2026 editions", {
+  skip_if_not(pipeline_available)
+  discovery <- fixture_discovery("oecd_fragility")
+  history <- read_approved_history(pipeline_path(
+    "data-raw", "approved", "humanitarian_indices.rds"
+  ))
+  old <- history[history$index_id == "oecd_fragility", , drop = FALSE]
+  expect_identical(validate_oecd_fragility(old, discovery)$status, "PASS")
+
+  updated <- old
+  updated$edition <- "States of Fragility 2026"
+  updated$source_version <- updated$edition
+  expect_identical(validate_oecd_fragility(updated, discovery)$status, "FAIL")
+  updated$score[updated$iso3 == "HND"] <- -1.19059250542223
+  expect_identical(validate_oecd_fragility(updated, discovery)$status, "PASS")
+  # A second added country still fails; this is not a widened coverage range.
+  unscored <- which(is.na(updated$score))[[1L]]
+  updated$score[[unscored]] <- -1
+  expect_identical(validate_oecd_fragility(updated, discovery)$status, "FAIL")
 })
 
 test_that("WorldRiskIndex workbook uses the first three publisher columns", {

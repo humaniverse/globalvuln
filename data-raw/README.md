@@ -52,6 +52,28 @@ no approved edition, HTTP 404 from other sources or unrecognized IMF URLs,
 other HTTP errors, unrecognized invalid file signatures, and parsing or
 validation failures still stop publication.
 
+AWS WAF browser challenges on downloads (including ReliefWeb's SEARO workbook)
+are identified by HTTP 202 with `x-amzn-waf-action: challenge`. These responses
+can have an empty body despite their successful HTTP status. They retain the
+approved edition with the same unchecked-freshness warning and next-run retry.
+Other empty or invalid downloads still fail, with their HTTP status and content
+type included in the error.
+
+## OECD fragility editions
+
+The live OECD TSV changed on 12 November 2026 ahead of the
+[2026 update](https://www.oecd.org/en/publications/states-of-fragility-2026-update_866ee7f4-en.html),
+published on 16 November. It includes 62 high- or extreme-fragility contexts
+(including Honduras), compared with 61 in 2025. The adapter labels new data
+`States of Fragility 2026`, records the publication date, and preserves the
+publisher's decimal-point precision. Mixed underlying reference years are
+reported explicitly rather than inferred from the publication year.
+
+Coverage remains exactly 62 for the current edition. Approved 2025 data retain
+their separate 61-country validation gate, so an unavailable request can still
+retain the older edition without relabelling it. A future coverage change
+requires another reviewed registry/adapter update.
+
 ## IMF debt-distress list
 
 `debt_distress` downloads the [IMF/WBG LIC DSA list](https://www.imf.org/-/media/files/publications/ft/dsa/dsalist.pdf)
