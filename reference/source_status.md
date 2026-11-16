@@ -57,7 +57,7 @@ source_status(source = "package", as_of = as.Date("2026-08-25"))
 #> 2                        2026 v0.7.2       2026-03-31     2026-08-04
 #> 3                            2026-09       2026-09-30     2026-11-11
 #> 4                               2025             <NA>     2026-08-04
-#> 5           States of Fragility 2025             <NA>     2026-08-04
+#> 5           States of Fragility 2026       2026-11-16     2026-11-16
 #> 6                      2025+b8261428             <NA>     2026-11-11
 #> 7              2026 release+e854c7fe             <NA>     2026-08-25
 #> 8      Human Development Report 2025             <NA>     2026-08-04
