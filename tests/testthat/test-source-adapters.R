@@ -123,7 +123,11 @@ test_that("OECD coverage gates distinguish the 2025 and 2026 editions", {
   history <- read_approved_history(pipeline_path(
     "data-raw", "approved", "humanitarian_indices.rds"
   ))
-  old <- history[history$index_id == "oecd_fragility", , drop = FALSE]
+  old <- history[
+    history$index_id == "oecd_fragility" &
+      history$source_version == "States of Fragility 2025",
+    , drop = FALSE
+  ]
   expect_identical(validate_oecd_fragility(old, discovery)$status, "PASS")
 
   updated <- old

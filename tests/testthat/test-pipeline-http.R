@@ -1,4 +1,4 @@
-http_pipeline_inputs <- function(index_id = "ghs") {
+http_pipeline_inputs <- function(index_id = "ghs", source_version = NULL) {
   registry <- read_source_registry(pipeline_path("data-raw", "sources.yml"))
   manifest <- read_approved_manifest(pipeline_path(
     "data-raw", "approved", "source_manifest.csv"
@@ -6,6 +6,17 @@ http_pipeline_inputs <- function(index_id = "ghs") {
   history <- read_approved_history(pipeline_path(
     "data-raw", "approved", "humanitarian_indices.rds"
   ))
+  if (!is.null(source_version)) {
+    # Pin historical test scenarios even after the pipeline appends a release.
+    manifest <- manifest[
+      manifest$index_id != index_id | manifest$source_version == source_version,
+      , drop = FALSE
+    ]
+    history <- history[
+      history$index_id != index_id | history$source_version == source_version,
+      , drop = FALSE
+    ]
+  }
   list(
     entry = registry_entry(registry, index_id),
     manifest = manifest,
@@ -119,7 +130,7 @@ test_that("a WAF challenge cannot hide a source without an approved edition", {
 
 test_that("blocked OECD requests can retain the approved 2025 edition", {
   skip_if_not(pipeline_available)
-  inputs <- http_pipeline_inputs("oecd_fragility")
+  inputs <- http_pipeline_inputs("oecd_fragility", "States of Fragility 2025")
   discovery <- discover_source(inputs$entry, inputs$manifest)
   directory <- withr::local_tempdir()
   httr2::with_mocked_responses(list(httr2::response(status_code = 403)), {
