@@ -6,6 +6,7 @@ humanitarian_index_sources:
 - humanitarian_index_sources/20261111T173125Z-739dc/
 - humanitarian_index_sources/20261111T180852Z-d9b2e/
 - humanitarian_index_sources/20261116T171106Z-7f201/
+- humanitarian_index_sources/20261117T144035Z-9a9ec/
 humanitarian_indices:
 - humanitarian_indices/20260825T162129Z-46af7/
 - humanitarian_indices/20260826T125813Z-ec1c6/
@@ -14,3 +15,4 @@ humanitarian_indices:
 - humanitarian_indices/20261111T173125Z-8efb5/
 - humanitarian_indices/20261111T180852Z-997cb/
 - humanitarian_indices/20261116T171106Z-5991b/
+- humanitarian_indices/20261117T144035Z-a4c6f/
