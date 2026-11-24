@@ -223,6 +223,74 @@ test_that("a forbidden discovery retains approved data and reports unchecked fre
   expect_match(text, "https://ghsindex.org/global/report/", fixed = TRUE)
 })
 
+test_that("INFORM Severity discovery retries a connection reset and retains its approved edition", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("inform_severity")
+  attempts <- 0L
+  local_mocked_bindings(curl_fetch_memory = function(...) {
+    attempts <<- attempts + 1L
+    stop(errorCondition(
+      "Recv failure: Connection reset by peer",
+      class = c("curl_error_recv_error", "curl_error")
+    ))
+  }, .package = "curl")
+
+  expect_warning(
+    discovery <- discover_source(inputs$entry, inputs$manifest),
+    "Connection reset by peer.*freshness was not checked"
+  )
+  expect_identical(attempts, 3L)
+  expect_true(discovery$unavailable)
+  expect_identical(discovery$source_version, latest_approved_version(
+    "inform_severity", inputs$manifest
+  ))
+
+  directory <- withr::local_tempdir()
+  path <- download_discovered_source(discovery, directory, inputs$manifest)
+  expect_true(endsWith(path, ".unavailable.rds"))
+  result <- retained_http_result(discovery, path, inputs)
+  pipeline <- assemble_pipeline(list(result), inputs$history, inputs$manifest)
+  expect_false(pipeline$changed)
+  expect_identical(pipeline$manifest, inputs$manifest)
+  expect_identical(result$validation$status, "WARNING")
+  report <- write_update_report(pipeline, file.path(directory, "summary.md"))
+  expect_match(paste(readLines(report), collapse = "\n"), "Sources checked: 0")
+})
+
+test_that("a connection reset during download requires an approved edition to retain", {
+  skip_if_not(pipeline_available)
+  inputs <- http_pipeline_inputs("inform_severity")
+  discovery <- new_discovery(
+    inputs$entry, inputs$manifest, inputs$entry$data_url[[1L]],
+    source_version = "2099-01"
+  )
+  discovery$registry_entry <- inputs$entry
+  directory <- withr::local_tempdir()
+  httr2::with_mocked_responses(function(req) {
+    stop(errorCondition(
+      "Failed to perform HTTP request.", class = "httr2_failure",
+      parent = errorCondition("Connection reset by peer", class = "curl_error_recv_error")
+    ))
+  }, {
+    expect_warning(
+      path <- download_discovered_source(discovery, directory, inputs$manifest),
+      "Source `inform_severity` download.*freshness was not checked"
+    )
+    manifest <- inputs$manifest[inputs$manifest$index_id != "inform_severity", ]
+    expect_error(
+      download_discovered_source(discovery, directory, manifest),
+      "No approved edition is available to retain"
+    )
+  })
+  expect_true(endsWith(path, ".unavailable.rds"))
+  result <- retained_http_result(discovery, path, inputs)
+  expect_identical(result$discovery$source_version, latest_approved_version(
+    "inform_severity", inputs$manifest
+  ))
+  expect_false(result$changed)
+  expect_null(result$discovery$content_hash)
+})
+
 test_that("a forbidden download never promotes a discovered release or error page", {
   skip_if_not(pipeline_available)
   inputs <- http_pipeline_inputs()

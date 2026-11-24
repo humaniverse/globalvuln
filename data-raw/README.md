@@ -52,6 +52,11 @@ no approved edition, HTTP 404 from other sources or unrecognized IMF URLs,
 other HTTP errors, unrecognized invalid file signatures, and parsing or
 validation failures still stop publication.
 
+Publisher requests that encounter connection failures are attempted up to three times.
+If a receive error such as a connection reset persists during discovery or
+download, the pipeline retains the approved edition and reports that freshness
+was not checked. The request is tried again on the next run.
+
 AWS WAF browser challenges on downloads (including ReliefWeb's SEARO workbook)
 are identified by HTTP 202 with `x-amzn-waf-action: challenge`. These responses
 can have an empty body despite their successful HTTP status. They retain the

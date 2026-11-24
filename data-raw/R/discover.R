@@ -12,8 +12,15 @@ pipeline_request <- function(url) {
     httr2::req_timeout(60) |>
     httr2::req_retry(
       max_tries = 3,
+      retry_on_failure = TRUE,
       backoff = function(tries) min(2 ^ tries, 10)
     )
+}
+
+is_unavailable_request_error <- function(error) {
+  inherits(error, "httr2_http_403") ||
+    (inherits(error, "httr2_failure") &&
+      inherits(error$parent, "curl_error_recv_error"))
 }
 
 discover_source <- function(entry, approved_manifest) {
@@ -22,15 +29,15 @@ discover_source <- function(entry, approved_manifest) {
   discover <- get(paste0("discover_", adapter), mode = "function")
   result <- tryCatch(
     discover(entry, approved_manifest),
-    httr2_http_403 = function(error) {
-      unavailable_source(
-        new_discovery(entry, approved_manifest, entry$homepage_url[[1L]]),
-        approved_manifest,
-        "discovery",
-        error
-      )
-    },
     error = function(error) {
+      if (is_unavailable_request_error(error)) {
+        return(unavailable_source(
+          new_discovery(entry, approved_manifest, entry$homepage_url[[1L]]),
+          approved_manifest,
+          "discovery",
+          error
+        ))
+      }
       stop(
         "Discovery failed for `", index_id, "` at ",
         entry$homepage_url[[1L]], ": ", conditionMessage(error),

@@ -51,10 +51,10 @@ download_discovered_source <- function(
         response
       }
     },
-    httr2_http_403 = function(error) {
-      unavailable_source(discovery, approved_manifest, "download", error)
-    },
     error = function(error) {
+      if (is_unavailable_request_error(error)) {
+        return(unavailable_source(discovery, approved_manifest, "download", error))
+      }
       # This IMF media link downloads in a browser but returns HTTP 404 to
       # automated clients. Retain approved data for this known URL only.
       if (inherits(error, "httr2_http_404") &&
